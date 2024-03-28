@@ -12,7 +12,6 @@ def read_RAM(fic_in):
         for ligne in fic_in:
             codeRAM.append(ligne[:-1])
 
-    #print(contenu)
     return codeRAM
 
 print(read_RAM("question1_ex code recherche max.txt"))
