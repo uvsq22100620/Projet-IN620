@@ -7,20 +7,21 @@ import re
 
 #### VARIABLES GLOBALES ################
 ## Regex
-regex_add = re.compile(r'ADD\((\d+|r\d+|i\d+|o\d+),\s*(\d+|r\d+|i\d+|o\d+),\s*(\d+|r\d+|o\d+)\)')  #regex instruction ex ADD(r0, 0, r1)
-regex_registre_result = re.compile(r'([ro])(\d+)')                                                 #regex détail registre dans lequel mettre le resultat de l'instruction ex r10 donne type r et indice 10
-regex_registre = re.compile(r'([ir])(\d+)')                                                        #regex détail d'un registre en argument
-regex_chiffre = re.compile(r'\d+')                                                                 #vérifier que la chaine de caractère est un chiffre
+#regex_instruction = re.compile(r'(ADD|SUB|DIV|MULT)\((\d+|r\d+|i\d+|o\d+),\s*(\d+|r\d+|i\d+|o\d+),\s*(\d+|r\d+|o\d+)\)')
+#regex_instruction = re.compile(r'(ADD|SUB|DIV|MULT)\((\d+|r\d+|i\d+|o\d+|i@r\d+|i@i\d+|r@i\d+|r@r\d+|O@i\d+|O@r\d+),\s*(\d+|r\d+|i\d+|o\d+|i@r\d+|i@i\d+|r@i\d+|r@r\d+|O@i\d+|O@r\d+),\s*(r\d+|O\d+|r@i\d+|r@r\d+|O@i\d+|O@r\d+))')
+regex_registre = re.compile(r'([iro])(\d+)')                                                        #regex détail d'un registre en argument
+regex_chiffre = re.compile(r'\d+')    
+regex_indirection = re.compile(r'([iro])@(i|r)(\d+)')
+regex_instruction = re.compile(r'(ADD|SUB|DIV|MULT)\((\d+|r\d+|i\d+|o\d+|([ir])@(i|r)(\d+)),\s*(\d+|r\d+|i\d+|o\d+|([ir])@(i|r)(\d+)),\s*(\d+|r\d+|o\d+|([iro])@(i|r)(\d+))\)')
+
 
 ## Dico
-dico_type_registre = {'i':0, 'r':1, 'o':2}
+dico_type_registre = {'i': "registres_i", 'r':"registres_r", 'o':"registres_o"}
 dico_elt_RAM = {}       #dico de stockage des différents éléments de la machine RAM à générer
 
 
 
-
-
-### Question 1 
+##### PARTIE 1 : Simulation de l'exécution d'une machine RAM
 
 def read_RAM(fic_in):
     '''Fonction permettant la lecture du fichier dans laquelle le code d'une Machine RAM est stockée 
@@ -31,9 +32,7 @@ def read_RAM(fic_in):
         for ligne in fic_in:
             codeRAM.append(ligne[:-1])
 
-    return codeRAM
-
-#print(read_RAM("question1_ex code recherche max.txt"))
+    return codeRAM  #Renvoie une liste avec l'entrée et les instructions de la machine RAM
 
 def info_code_RAM(codeRAM):
     '''Fonction permettant de récupérer l'entrée de la machine RAM et de créer les différentes listes réprésentant 
@@ -42,7 +41,7 @@ def info_code_RAM(codeRAM):
 
     registres_i = []    #registre input
 
-    entree = codeRAM[0].split(',')      #la première ligne du code correspond à l'entrée (chaque elt de l'entrée est séparé par une virgule)
+    entree = codeRAM[0].split(', ')      #la première ligne du code correspond à l'entrée (chaque elt de l'entrée est séparé par une virgule)
     taille = int(entree[0])             #taille de l'entrée
     
     #ajoute dans notre registre input l'entrée obtenue
@@ -57,59 +56,232 @@ def info_code_RAM(codeRAM):
     dico_elt_RAM["codeRAM"] = codeRAM[1:]           #liste avec les instructions
     dico_elt_RAM["registres_i"] = registres_i
     dico_elt_RAM["registres_r"] = registres_r
-    dico_elt_RAM["registres_o"]=registres_o
+    dico_elt_RAM["registres_o"] = registres_o
 
     return dico_elt_RAM
 
-#print(info_code_RAM(read_RAM("question1_ex code recherche max.txt")))
+def desc_registre(registre):
+    '''Fonction qui prend en entrée un registre avec le format i|r|o suivit d'un chiffre (par exemple r0)
+    et renvoie le type du registre et l'indice du registre'''
 
-
-def instruction_ADD(instruction, registres):
-    '''Fonction permettant l'analyse et le calcul d'une instruction ADD
-    L'argument registres est une liste des trois listes correspondant aux registres'''
-
-    resultat_add = re.match(regex_add, instruction)
-
-    #Recupere les different argument de l'instruction
-    if resultat_add:
-        arg1 = resultat_add.group(1)
-        arg2 = resultat_add.group(2)
-        arg3 = resultat_add.group(3)
-
-        #Si les arg1 et arg2 sont des registres et pas des entiers on recup la valeur
-        if not re.match(regex_chiffre, arg1):   #test si c'est pas un entier
-            resultat_registre_arg1 = re.search(regex_registre, arg1)
-
-            if resultat_registre_arg1 :
-                type_registre_arg1 = resultat_registre_arg1.group(1)
-                indice_arg1 = int(resultat_registre_arg1.group(2))
-
-            arg1 = int(registres[dico_type_registre[type_registre_arg1]][indice_arg1])
-            
-        if not re.match(regex_chiffre, arg2):
-            resultat_registre_arg2 = re.search(regex_registre, arg2)
-
-            if resultat_registre_arg2 :
-                type_registre_arg2 = resultat_registre_arg2.group(1)
-                indice_arg2 = int(resultat_registre_arg2.group(2))
-
-            arg2 = int(registres[dico_type_registre[type_registre_arg2]][indice_arg2])
-
-        #Recup le type du registre dans lequel mettre le resultat de l'addition (r ou o) et l'indice de ce registre
-        resultat_registre_result = re.search(regex_registre_result, arg3)
-        if resultat_registre_result :
-            type_registre_result = resultat_registre_result.group(1)
-            indice_result = int(resultat_registre_result.group(2))
-        
-        #Realisation de l'instruction ADD
-        registres[dico_type_registre[type_registre_result]][indice_result] = int(arg1)+ int(arg2)
-
-        return registres   
+    match_registre = re.search(regex_registre, registre)
+    print(match_registre, registre)
+    if match_registre :
+        type = match_registre.group(1)
+        indice = int(match_registre.group(2))
     
-    #retourne False quand l'instruction n'est pas correcte (ex : doit écrire dans un registre de type i alors qu'on ne peut que écrire dans r ou o)
-    return False
+    return (type, indice)
+
+def instruction_ADD(arg1, arg2, arg3):
+    '''Fonction permettant l'analyse et le calcul d'une instruction ADD'''
+
+    global dico_elt_RAM
+
+    #Si les éléments à additionner ne sont pas des entiers on va aller chercher les valeurs stockées dans les registre correspondant
+    if not re.match(regex_chiffre, arg1):
+        desc_arg1 = desc_registre(arg1) #permet de récupérer le type de registre et son indice
+
+        if desc_arg1[0] == 'o':
+            raise Exception("L'instruction est erronée. Vous ne pouvez pas lire les registres de type Output")
+
+        arg1 = int(dico_elt_RAM[dico_type_registre[desc_arg1[0]]][desc_arg1[1]])
+            
+    if not re.match(regex_chiffre, arg2):
+        desc_arg2 = desc_registre(arg2)
+
+        if desc_arg1[0] == 'o':
+            raise Exception("L'instruction est erronée. Vous ne pouvez pas lire les registres de type Output")
+            
+        arg2 = int(dico_elt_RAM[dico_type_registre[desc_arg2[0]]][desc_arg2[1]])
+
+    #Recup le type du registre dans lequel mettre le resultat de l'addition (r ou o) et l'indice de ce registre
+    desc_arg3 = desc_registre(arg3)
+
+    if desc_arg3[0] == 'i':
+        raise Exception("L'instruction est erronée. Vous ne pouvez pas écrire dans les registres de type Input")
+
+    #Realisation de l'instruction ADD en mettant à jour les registres du dico global
+    dico_elt_RAM[dico_type_registre[desc_arg3[0]]][desc_arg3[1]] = int(arg1) + int(arg2)
+
+    return True
+
+def instruction_SUB(arg1, arg2, arg3):
+    '''Fonction permettant l'analyse et le calcul d'une instruction SUB'''
+
+    global dico_elt_RAM
+
+    #Si les éléments à additionner ne sont pas des entiers on va aller chercher les valeurs stockées dans les registre correspondant
+    if not re.match(regex_chiffre, arg1):   
+        desc_arg1 = desc_registre(arg1) #permet de récupérer le type de registre et son indice
+
+        if desc_arg1[0] == 'o':
+            raise Exception("L'instruction est erronée. Vous ne pouvez pas lire les registres de type Output")
+
+        arg1 = int(dico_elt_RAM[dico_type_registre[desc_arg1[0]]][desc_arg1[1]])
+            
+    if not re.match(regex_chiffre, arg2):
+        desc_arg2 = desc_registre(arg2)
+
+        if desc_arg1[0] == 'o':
+            raise Exception("L'instruction est erronée. Vous ne pouvez pas lire les registres de type Output")
+            
+        arg2 = int(dico_elt_RAM[dico_type_registre[desc_arg2[0]]][desc_arg2[1]])
+
+    #Recup le type du registre dans lequel mettre le resultat de l'addition (r ou o) et l'indice de ce registre
+    desc_arg3 = desc_registre(arg3)
+
+    if desc_arg3[0] == 'i':
+        raise Exception("L'instruction est erronée. Vous ne pouvez pas écrire dans les registres de type Input")
+
+    #Realisation de l'instruction ADD en mettant à jour les registres du dico global
+    dico_elt_RAM[dico_type_registre[desc_arg3[0]]][desc_arg3[1]] = int(arg1) - int(arg2)
+
+    return True  
+
+def instruction_DIV(arg1, arg2, arg3):
+    '''Fonction permettant l'analyse et le calcul d'une instruction DIV'''
+
+    global dico_elt_RAM
+
+    #Si les éléments à additionner ne sont pas des entiers on va aller chercher les valeurs stockées dans les registre correspondant
+    if not re.match(regex_chiffre, arg1):   
+        desc_arg1 = desc_registre(arg1) #permet de récupérer le type de registre et son indice
+
+        if desc_arg1[0] == 'o':
+            raise Exception("L'instruction est erronée. Vous ne pouvez pas lire les registres de type Output")
+
+        arg1 = int(dico_elt_RAM[dico_type_registre[desc_arg1[0]]][desc_arg1[1]])
+            
+    if not re.match(regex_chiffre, arg2):
+        desc_arg2 = desc_registre(arg2)
+
+        if desc_arg1[0] == 'o':
+            raise Exception("L'instruction est erronée. Vous ne pouvez pas lire les registres de type Output")
+            
+        arg2 = int(dico_elt_RAM[dico_type_registre[desc_arg2[0]]][desc_arg2[1]])
+
+
+    if int(arg2) == 0 :
+        raise Exception("Impossible de diviser par 0, l'instruction est erronnée")
+            
+
+    #Recup le type du registre dans lequel mettre le resultat de l'addition (r ou o) et l'indice de ce registre
+    desc_arg3 = desc_registre(arg3)
+
+    if desc_arg3[0] == 'i':
+        raise Exception("L'instruction est erronée. Vous ne pouvez pas écrire dans les registres de type Input")
+    
+    #Realisation de l'instruction ADD en mettant à jour les registres du dico global
+    dico_elt_RAM[dico_type_registre[desc_arg3[0]]][desc_arg3[1]] = int(arg1) / int(arg2)
+
+    return True  
+
+def instruction_MULT(arg1, arg2, arg3):
+    '''Fonction permettant l'analyse et le calcul d'une instruction MULT'''
+
+    global dico_elt_RAM
+
+    #Si les éléments à additionner ne sont pas des entiers on va aller chercher les valeurs stockées dans les registre correspondant
+    if not re.match(regex_chiffre, arg1):   
+        desc_arg1 = desc_registre(arg1) #permet de récupérer le type de registre et son indice
+
+        if desc_arg1[0] == 'o':
+            raise Exception("L'instruction est erronée. Vous ne pouvez pas lire les registres de type Output")
+
+        arg1 = int(dico_elt_RAM[dico_type_registre[desc_arg1[0]]][desc_arg1[1]])
+            
+    if not re.match(regex_chiffre, arg2):
+        desc_arg2 = desc_registre(arg2)
+
+        if desc_arg1[0] == 'o':
+            raise Exception("L'instruction est erronée. Vous ne pouvez pas lire les registres de type Output")
+            
+        arg2 = int(dico_elt_RAM[dico_type_registre[desc_arg2[0]]][desc_arg2[1]])
+
+    #Recup le type du registre dans lequel mettre le resultat de l'addition (r ou o) et l'indice de ce registre
+    desc_arg3 = desc_registre(arg3)
+
+    if desc_arg3[0] == 'i':
+        raise Exception("L'instruction est erronée. Vous ne pouvez pas écrire dans les registres de type Input")
+
+    #Realisation de l'instruction ADD en mettant à jour les registres du dico global
+    dico_elt_RAM[dico_type_registre[desc_arg3[0]]][desc_arg3[1]] = int(arg1) * int(arg2)
+
+    return True  
+
+def gestion_indirection(registre):
+    '''Fonction permettant de gérer l'indirection des registres
+    ex : i@r1 correspond au registre ik avec k la valeur dans r1'''
+
+    match = re.match(regex_indirection, registre)
+    
+    if match :
+        registre_type = match.group(1)  # Type de registre (I, R ou O)
+        registre_k = match.group(2)  # i ou r
+        k = int(match.group(3))  # Chiffre après le r
+
+    indice = dico_elt_RAM[dico_type_registre[registre_k]][k]
+
+    return registre_type + indice
+
+#info_code_RAM(read_RAM("question1_ex code recherche max.txt"))
+#print(gestion_indirection('i@i1'))
+
+def analyse_instructions(i_instruc):
+    '''Fonction permettant l'analyse d'une instruction de la machine RAM à partir d'une configuration. 
+    L'indice est renseigné en paramètre et les registres sont récupérés dans le dictionnaire global'''
+    
+    #récupère la position en cours dans l'execution du code RAM
+    instruction = dico_elt_RAM['codeRAM'][i_instruc[0]]
+
+    match_instruc = re.match(regex_instruction, instruction)
+        
+    if match_instruc :
+        type_operation = match_instruc.group(1)
+        arg1 = match_instruc.group(2)
+        arg2 = match_instruc.group(3)
+        arg3 = match_instruc.group(4)
+    else :
+        raise Exception("L'instruction n'est pas valide")
+    
+    #traitement des cas avec indirection
+    match_arg1 = re.match(regex_indirection, arg1)
+    match_arg2 = re.match(regex_indirection, arg2)
+
+    if match_arg1 :
+        arg1 = gestion_indirection(arg1)
+
+    if match_arg2 :
+        arg2 = gestion_indirection(arg2)
+
+    #appel de la fonction correspondant à l'instruction
+    if type_operation == 'ADD' :
+        return instruction_ADD(arg1, arg2, arg3)
+ 
+    elif type_operation == 'SUB' :
+        return instruction_SUB(arg1, arg2, arg3)
+           
+    elif type_operation == 'DIV' :
+        return instruction_DIV(arg1, arg2, arg3)
+
+    else :
+        return instruction_MULT(arg1, arg2, arg3)
+       
+
+info_code_RAM(read_RAM("question1_ex code recherche max.txt"))
+print(analyse_instructions((0, 0)))
+print(dico_elt_RAM['registres_r'])
+print(analyse_instructions((1, 0)))
+print(dico_elt_RAM['registres_r'])
+print(analyse_instructions((2, 0)))
+print(dico_elt_RAM['registres_r'])
+print(analyse_instructions((3, 0)))
+print(dico_elt_RAM['registres_r'])
+
+# lignes de codes de tests que je garde de côté au cas où
 
 #print(instruction_ADD('ADD(i1, 0, r1)', [['10', '7', ' 25', ' 14', ' 68', ' 39', ' 50', ' 92', ' 3', ' 61', ' 18'], ['#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'], ['#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#']]))
 
-info_code_RAM(read_RAM("question1_ex code recherche max.txt"))
-print(instruction_ADD(dico_elt_RAM['codeRAM'][0], [dico_elt_RAM['registres_i'], dico_elt_RAM['registres_r'], dico_elt_RAM['registres_o']]))
+#info_code_RAM(read_RAM("question1_ex code recherche max.txt"))
+#print(instruction_ADD(dico_elt_RAM['codeRAM'][0], [dico_elt_RAM['registres_i'], dico_elt_RAM['registres_r'], dico_elt_RAM['registres_o']]))
+#print(dico_elt_RAM['registres_r'])
