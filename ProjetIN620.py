@@ -13,7 +13,8 @@ regex_registre = re.compile(r'([iro])(\d+)')                                    
 regex_chiffre = re.compile(r'\d+')    
 regex_indirection = re.compile(r'([iro])@(i|r)(\d+)')
 regex_instruction = re.compile(r'(ADD|SUB|DIV|MULT)\((\d+|r\d+|i\d+|o\d+|([ir])@(i|r)(\d+)),\s*(\d+|r\d+|i\d+|o\d+|([ir])@(i|r)(\d+)),\s*(\d+|r\d+|o\d+|([iro])@(i|r)(\d+))\)')
-
+regex_jump = re.compile(r'(JUMP)\((\d+)\)')
+regex_jumps_spe = re.compile(r'(JE|JL)\((\d+|r\d+|i\d+|o\d+|([ir])@(i|r)(\d+)),\s*(\d+|r\d+|i\d+|o\d+|([ir])@(i|r)(\d+)),\s*(\d+)\)')
 
 ## Dico
 dico_type_registre = {'i': "registres_i", 'r':"registres_r", 'o':"registres_o"}
@@ -102,6 +103,9 @@ def instruction_ADD(arg1, arg2, arg3):
 
     #Realisation de l'instruction ADD en mettant à jour les registres du dico global
     dico_elt_RAM[dico_type_registre[desc_arg3[0]]][desc_arg3[1]] = int(arg1) + int(arg2)
+
+    #Gestion des configurations
+    configuration()
 
     return True
 
@@ -227,6 +231,11 @@ def gestion_indirection(registre):
 #info_code_RAM(read_RAM("question1_ex code recherche max.txt"))
 #print(gestion_indirection('i@i1'))
 
+def configuration(i_nouvelle_config):
+    '''Renvoie une liste de deux éléments : l'indice de la prochaine instruction à traiter et les registres'''
+
+    return [i_nouvelle_config]
+
 def analyse_instructions(i_instruc):
     '''Fonction permettant l'analyse d'une instruction de la machine RAM à partir d'une configuration. 
     L'indice est renseigné en paramètre et les registres sont récupérés dans le dictionnaire global'''
@@ -254,6 +263,8 @@ def analyse_instructions(i_instruc):
     if match_arg2 :
         arg2 = gestion_indirection(arg2)
 
+    configuration = [0,0]       # elle à modifier dans les fonctions ADD, SUB, ...
+
     #appel de la fonction correspondant à l'instruction
     if type_operation == 'ADD' :
         return instruction_ADD(arg1, arg2, arg3)
@@ -264,8 +275,22 @@ def analyse_instructions(i_instruc):
     elif type_operation == 'DIV' :
         return instruction_DIV(arg1, arg2, arg3)
 
-    else :
+    elif type_operation == 'MULT':
         return instruction_MULT(arg1, arg2, arg3)
+    
+    elif type_operation == 'JUMP':
+        return analyse_instructions((i_instruc + arg1, 0))      # on rappelle la fonction en changeant l'indice de la ligne à évaluer
+
+    elif type_operation == 'JE':
+        if arg1 == arg2:
+            return analyse_instructions((i_instruc + arg3, 0))    
+
+    else:
+        if arg1 > arg2:
+            return analyse_instructions((i_instruc + arg3, 0))    
+
+
+    return
        
 
 info_code_RAM(read_RAM("question1_ex code recherche max.txt"))
@@ -277,7 +302,7 @@ print(analyse_instructions((2, 0)))
 print(dico_elt_RAM['registres_r'])
 print(analyse_instructions((3, 0)))
 print(dico_elt_RAM['registres_r'])
-
+print('mon analyse : ', analyse_instructions((4,0)))
 # lignes de codes de tests que je garde de côté au cas où
 
 #print(instruction_ADD('ADD(i1, 0, r1)', [['10', '7', ' 25', ' 14', ' 68', ' 39', ' 50', ' 92', ' 3', ' 61', ' 18'], ['#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'], ['#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#']]))
