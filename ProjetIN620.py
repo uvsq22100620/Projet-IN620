@@ -104,9 +104,6 @@ def instruction_ADD(arg1, arg2, arg3):
     #Realisation de l'instruction ADD en mettant à jour les registres du dico global
     dico_elt_RAM[dico_type_registre[desc_arg3[0]]][desc_arg3[1]] = int(arg1) + int(arg2)
 
-    #Gestion des configurations
-    configuration()
-
     return True
 
 def instruction_SUB(arg1, arg2, arg3):
@@ -231,10 +228,6 @@ def gestion_indirection(registre):
 #info_code_RAM(read_RAM("question1_ex code recherche max.txt"))
 #print(gestion_indirection('i@i1'))
 
-def configuration(i_nouvelle_config):
-    '''Renvoie une liste de deux éléments : l'indice de la prochaine instruction à traiter et les registres'''
-
-    return [i_nouvelle_config]
 
 def analyse_instructions(i_instruc):
     '''Fonction permettant l'analyse d'une instruction de la machine RAM à partir d'une configuration. 
@@ -263,34 +256,42 @@ def analyse_instructions(i_instruc):
     if match_arg2 :
         arg2 = gestion_indirection(arg2)
 
-    configuration = [0,0]       # elle à modifier dans les fonctions ADD, SUB, ...
-
     #appel de la fonction correspondant à l'instruction
     if type_operation == 'ADD' :
+        nv_i_instr = i_instruc + 1  # à optimiser avec un if
         return instruction_ADD(arg1, arg2, arg3)
  
     elif type_operation == 'SUB' :
+        nv_i_instr = i_instruc + 1
         return instruction_SUB(arg1, arg2, arg3)
            
     elif type_operation == 'DIV' :
+        nv_i_instr = i_instruc + 1
         return instruction_DIV(arg1, arg2, arg3)
 
     elif type_operation == 'MULT':
+        nv_i_instr = i_instruc + 1
         return instruction_MULT(arg1, arg2, arg3)
     
     elif type_operation == 'JUMP':
+        nv_i_instr = i_instruc + arg1
         return analyse_instructions((i_instruc + arg1, 0))      # on rappelle la fonction en changeant l'indice de la ligne à évaluer
 
     elif type_operation == 'JE':
         if arg1 == arg2:
-            return analyse_instructions((i_instruc + arg3, 0))    
+            nv_i_instr = i_instruc + arg3
+            return analyse_instructions((i_instruc + arg3, 0))
+        else:
+            nv_i_instr = i_instruc + 1  
 
     else:
         if arg1 > arg2:
-            return analyse_instructions((i_instruc + arg3, 0))    
+            nv_i_instr = i_instruc + arg3
+            return analyse_instructions((i_instruc + arg3, 0))
+        else :
+            nv_i_instr = i_instruc + 1      
 
-
-    return
+    return [nv_i_instr, dico_elt_RAM]
        
 
 info_code_RAM(read_RAM("question1_ex code recherche max.txt"))
