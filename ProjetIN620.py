@@ -14,7 +14,7 @@ regex_chiffre = re.compile(r'-?\d+')
 regex_indirection = re.compile(r'([iro])@([ir])(\d+)')
 regex_instruction = re.compile(r'(ADD|SUB|DIV|MULT)\((\d+|r\d+|i\d+|o\d+|[ir]@[ir]\d+),\s*(\d+|r\d+|i\d+|o\d+|[ir]@[ir]\d+),\s*(\d+|r\d+|o\d+|[ro]@[ir]\d+)\)')
 regex_jump = re.compile(r'(JUMP)\((-?\d+)\)')
-regex_jumps_spe = re.compile(r'(JE|JL)\((\d+|r\d+|i\d+|o\d+),\s*(\d+|r\d+|i\d+|o\d+)\)')
+regex_jumps_spe = re.compile(r'(JE|JL)\((\d+|r\d+|i\d+|o\d+|[ir]@[ir]\d+),\s*(\d+|r\d+|i\d+|o\d+|[ir]@[ir]\d+)\)')
 
 ## Dico
 dico_type_registre = {'i': "registres_i", 'r':"registres_r", 'o':"registres_o"}
@@ -253,8 +253,8 @@ def analyse_instructions(i_instruc):
         print(match_jump)
         type_operation = 'JUMP'
         arg1 = int(match_jump.group(2))
-        arg2 = 0
-        arg3 = 0
+        arg2 = '0'
+        arg3 = '0'
 
     elif match_jumps_spe :
         type_operation = match_jumps_spe.group(1)
@@ -265,14 +265,14 @@ def analyse_instructions(i_instruc):
     else :    
         raise Exception("L'instruction n'est pas valide")
     
-    # Test pas #
+    # Test pas de #
     if (arg1 == '#') or (arg2 == '#') or (arg3 == '#'):
         raise Exception("Le caractère '#' ne peut pas être accepté")
     
     #traitement des cas avec indirection
-    match_arg1 = re.match(regex_indirection, arg1)
-    match_arg2 = re.match(regex_indirection, arg2)
-    match_arg3 = re.match(regex_indirection, arg3)
+    match_arg1 = re.match(regex_indirection, str(arg1))
+    match_arg2 = re.match(regex_indirection, str(arg2))
+    match_arg3 = re.match(regex_indirection, str(arg3))
 
     if match_arg1 :
        arg1 = gestion_indirection(arg1)
@@ -329,6 +329,7 @@ def analyse_programme(nom_fichier):
 
     while i_instr_courant < fin_fichier :
         print(i_instr_courant)
+        print(instructions[i_instr_courant])
         res = analyse_instructions(i_instr_courant)
         i_instr_courant = res[0]    # indice de la prochaine ligne à exécuter
         historique_config.append(res[1])
@@ -338,9 +339,9 @@ def analyse_programme(nom_fichier):
 
 ### TESTS
 
-#print(analyse_programme("test_simple"))
-analyse_programme("question1_ex code recherche max.txt")
-#analyse_programme("test2.txt")
+#print(analyse_programme("test3.txt"))
+#print(analyse_programme("question1_ex code recherche max.txt"))
+#print(analyse_programme("test2.txt"))
 
 #print(analyse_instructions(0))
 #print(analyse_instructions(1))
@@ -359,3 +360,36 @@ analyse_programme("question1_ex code recherche max.txt")
 #info_code_RAM(read_RAM("question1_ex code recherche max.txt"))
 #print(instruction_ADD(dico_elt_RAM['codeRAM'][0], [dico_elt_RAM['registres_i'], dico_elt_RAM['registres_r'], dico_elt_RAM['registres_o']]))
 #print(dico_elt_RAM['registres_r'])
+
+
+##### Interface Graphique #####
+
+#pip install customtkinter
+#pip install customtkinter --upgrade
+
+import customtkinter
+
+def chmtFenetreP1():
+    pass
+
+def chmtFenetreP2():
+    pass
+
+def chmtFenetreP3():
+    pass
+
+app_accueil = customtkinter.CTk()
+app_accueil.geometry("420x190")
+app_accueil.title("Projet_IN-620")
+
+l_choisissez = customtkinter.CTkLabel(app_accueil, text="Choisissez une partie du projet")
+l_choisissez.grid(row=0, column=0)
+b_choixP1 = customtkinter.CTkButton(app_accueil, text="Simulation de l'exécution d'une machine RAM", command=chmtFenetreP1)
+b_choixP2 = customtkinter.CTkButton(app_accueil, text="Simulation d'un automate à pile avec une machine RAM", command=chmtFenetreP2)
+b_choixP3 = customtkinter.CTkButton(app_accueil, text="Optimisation de la machine RAM", command=chmtFenetreP3)
+b_choixP1.grid(row=1, column=0, padx=20, pady=10)
+b_choixP2.grid(row=2, column=0, padx=20, pady=10)
+b_choixP3.grid(row=3, column=0, padx=20, pady=10)
+
+
+app_accueil.mainloop()
