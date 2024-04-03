@@ -7,14 +7,14 @@ import re
 
 #### VARIABLES GLOBALES ################
 ## Regex
-#regex_instruction = re.compile(r'(ADD|SUB|DIV|MULT)\((\d+|r\d+|i\d+|o\d+),\s*(\d+|r\d+|i\d+|o\d+),\s*(\d+|r\d+|o\d+)\)')
+regex_instruction = re.compile(r'(ADD|SUB|DIV|MULT)\((\d+|r\d+|i\d+|o\d+),\s*(\d+|r\d+|i\d+|o\d+),\s*(\d+|r\d+|o\d+)\)')
 #regex_instruction = re.compile(r'(ADD|SUB|DIV|MULT)\((\d+|r\d+|i\d+|o\d+|i@r\d+|i@i\d+|r@i\d+|r@r\d+|O@i\d+|O@r\d+),\s*(\d+|r\d+|i\d+|o\d+|i@r\d+|i@i\d+|r@i\d+|r@r\d+|O@i\d+|O@r\d+),\s*(r\d+|O\d+|r@i\d+|r@r\d+|O@i\d+|O@r\d+))')
 regex_registre = re.compile(r'([iro])(\d+)')                                                        #regex détail d'un registre en argument
-regex_chiffre = re.compile(r'\d+')    
+regex_chiffre = re.compile(r'(-?)\d+')    
 regex_indirection = re.compile(r'([iro])@(i|r)(\d+)')
-regex_instruction = re.compile(r'(ADD|SUB|DIV|MULT)\((\d+|r\d+|i\d+|o\d+|([ir])@(i|r)(\d+)),\s*(\d+|r\d+|i\d+|o\d+|([ir])@(i|r)(\d+)),\s*(\d+|r\d+|o\d+|([iro])@(i|r)(\d+))\)')
-regex_jump = re.compile(r'(JUMP)\((\d+)\)')
-regex_jumps_spe = re.compile(r'(JE|JL)\((\d+|r\d+|i\d+|o\d+|([ir])@(i|r)(\d+)),\s*(\d+|r\d+|i\d+|o\d+|([ir])@(i|r)(\d+)),\s*(\d+)\)')
+#regex_instruction = re.compile(r'(ADD|SUB|DIV|MULT)\((\d+|r\d+|i\d+|o\d+|([ir])@(i|r)(\d+)),\s*(\d+|r\d+|i\d+|o\d+|([ir])@(i|r)(\d+)),\s*(\d+|r\d+|o\d+|([iro])@(i|r)(\d+))\)')
+regex_jump = re.compile(r'(JUMP)\((-?\d+)\)')
+regex_jumps_spe = re.compile(r'(JE|JL)\((\d+|r\d+|i\d+|o\d+),\s*(\d+|r\d+|i\d+|o\d+)\)')
 
 ## Dico
 dico_type_registre = {'i': "registres_i", 'r':"registres_r", 'o':"registres_o"}
@@ -66,7 +66,7 @@ def desc_registre(registre):
     et renvoie le type du registre et l'indice du registre'''
 
     match_registre = re.search(regex_registre, registre)
-    print(match_registre, registre)
+    #print(match_registre, registre)
     if match_registre :
         type = match_registre.group(1)
         indice = int(match_registre.group(2))
@@ -86,7 +86,7 @@ def instruction_ADD(arg1, arg2, arg3):
             raise Exception("L'instruction est erronée. Vous ne pouvez pas lire les registres de type Output")
 
         arg1 = int(dico_elt_RAM[dico_type_registre[desc_arg1[0]]][desc_arg1[1]])
-            
+
     if not re.match(regex_chiffre, arg2):
         desc_arg2 = desc_registre(arg2)
 
@@ -104,7 +104,7 @@ def instruction_ADD(arg1, arg2, arg3):
     #Realisation de l'instruction ADD en mettant à jour les registres du dico global
     dico_elt_RAM[dico_type_registre[desc_arg3[0]]][desc_arg3[1]] = int(arg1) + int(arg2)
 
-    return True
+    return
 
 def instruction_SUB(arg1, arg2, arg3):
     '''Fonction permettant l'analyse et le calcul d'une instruction SUB'''
@@ -137,7 +137,7 @@ def instruction_SUB(arg1, arg2, arg3):
     #Realisation de l'instruction ADD en mettant à jour les registres du dico global
     dico_elt_RAM[dico_type_registre[desc_arg3[0]]][desc_arg3[1]] = int(arg1) - int(arg2)
 
-    return True  
+    return
 
 def instruction_DIV(arg1, arg2, arg3):
     '''Fonction permettant l'analyse et le calcul d'une instruction DIV'''
@@ -175,7 +175,7 @@ def instruction_DIV(arg1, arg2, arg3):
     #Realisation de l'instruction ADD en mettant à jour les registres du dico global
     dico_elt_RAM[dico_type_registre[desc_arg3[0]]][desc_arg3[1]] = int(arg1) / int(arg2)
 
-    return True  
+    return
 
 def instruction_MULT(arg1, arg2, arg3):
     '''Fonction permettant l'analyse et le calcul d'une instruction MULT'''
@@ -208,7 +208,7 @@ def instruction_MULT(arg1, arg2, arg3):
     #Realisation de l'instruction ADD en mettant à jour les registres du dico global
     dico_elt_RAM[dico_type_registre[desc_arg3[0]]][desc_arg3[1]] = int(arg1) * int(arg2)
 
-    return True  
+    return  
 
 def gestion_indirection(registre):
     '''Fonction permettant de gérer l'indirection des registres
@@ -232,78 +232,104 @@ def gestion_indirection(registre):
 def analyse_instructions(i_instruc):
     '''Fonction permettant l'analyse d'une instruction de la machine RAM à partir d'une configuration. 
     L'indice est renseigné en paramètre et les registres sont récupérés dans le dictionnaire global'''
-    
-    #récupère la position en cours dans l'execution du code RAM
-    instruction = dico_elt_RAM['codeRAM'][i_instruc[0]]
 
+    #récupère la position en cours dans l'execution du code RAM
+    instruction = dico_elt_RAM['codeRAM'][i_instruc]
+
+    # Analyse des groupes
     match_instruc = re.match(regex_instruction, instruction)
-        
+    match_jump = re.match(regex_jump, instruction)
+    match_jumps_spe = re.match(regex_jumps_spe, instruction)    
+
     if match_instruc :
         type_operation = match_instruc.group(1)
         arg1 = match_instruc.group(2)
         arg2 = match_instruc.group(3)
         arg3 = match_instruc.group(4)
+
+    elif match_jump :
+        type_operation = 'JUMP'
+        arg1 = int(match_jump.group(2))
+        arg2 = 0
+        arg3 = 0
+
+    elif match_jumps_spe :
+        type_operation = match_jumps_spe.group(1)
+        arg1 = match_jumps_spe.group(2)
+        arg2 = match_jumps_spe.group(3)
+        arg3 = match_jumps_spe.group(4)
+        
     else :
         raise Exception("L'instruction n'est pas valide")
     
+    # Test pas #
+    if (arg1 == '#') or (arg2 == '#') or (arg3 == '#'):
+        raise Exception("Le caractère '#' ne peut pas être accepté")
+    
     #traitement des cas avec indirection
-    match_arg1 = re.match(regex_indirection, arg1)
-    match_arg2 = re.match(regex_indirection, arg2)
+    #match_arg1 = re.match(regex_indirection, arg1)
+    #match_arg2 = re.match(regex_indirection, arg2)
 
-    if match_arg1 :
-        arg1 = gestion_indirection(arg1)
+    #if match_arg1 :
+     #   arg1 = gestion_indirection(arg1)
 
-    if match_arg2 :
-        arg2 = gestion_indirection(arg2)
+    #if match_arg2 :
+     #   arg2 = gestion_indirection(arg2)
 
     #appel de la fonction correspondant à l'instruction
     if type_operation == 'ADD' :
         nv_i_instr = i_instruc + 1  # à optimiser avec un if
-        return instruction_ADD(arg1, arg2, arg3)
+        instruction_ADD(arg1, arg2, arg3)
  
     elif type_operation == 'SUB' :
         nv_i_instr = i_instruc + 1
-        return instruction_SUB(arg1, arg2, arg3)
+        instruction_SUB(arg1, arg2, arg3)
            
     elif type_operation == 'DIV' :
         nv_i_instr = i_instruc + 1
-        return instruction_DIV(arg1, arg2, arg3)
+        instruction_DIV(arg1, arg2, arg3)
 
     elif type_operation == 'MULT':
         nv_i_instr = i_instruc + 1
-        return instruction_MULT(arg1, arg2, arg3)
+        instruction_MULT(arg1, arg2, arg3)
     
     elif type_operation == 'JUMP':
         nv_i_instr = i_instruc + arg1
-        return analyse_instructions((i_instruc + arg1, 0))      # on rappelle la fonction en changeant l'indice de la ligne à évaluer
 
     elif type_operation == 'JE':
         if arg1 == arg2:
             nv_i_instr = i_instruc + arg3
-            return analyse_instructions((i_instruc + arg3, 0))
         else:
             nv_i_instr = i_instruc + 1  
 
-    else:
+    else:       # JL
         if arg1 > arg2:
             nv_i_instr = i_instruc + arg3
-            return analyse_instructions((i_instruc + arg3, 0))
         else :
             nv_i_instr = i_instruc + 1      
 
     return [nv_i_instr, dico_elt_RAM]
        
 
-info_code_RAM(read_RAM("question1_ex code recherche max.txt"))
-print(analyse_instructions((0, 0)))
-print(dico_elt_RAM['registres_r'])
-print(analyse_instructions((1, 0)))
-print(dico_elt_RAM['registres_r'])
-print(analyse_instructions((2, 0)))
-print(dico_elt_RAM['registres_r'])
-print(analyse_instructions((3, 0)))
-print(dico_elt_RAM['registres_r'])
-print('mon analyse : ', analyse_instructions((4,0)))
+#info_code_RAM(read_RAM("question1_ex code recherche max.txt"))
+info_code_RAM(read_RAM("test2.txt"))
+
+#### Attention pour tes tests, pense à enlever le tuple, garde juste le 1er élément, histoire que tu restes pas bloquée la dessus
+
+#print(analyse_instructions((0, 0)))
+#print(dico_elt_RAM['registres_r'])
+#print(analyse_instructions((1, 0)))
+#print(dico_elt_RAM['registres_r'])
+#print(analyse_instructions((2, 0)))
+#print(dico_elt_RAM['registres_r'])
+#print(analyse_instructions((3, 0)))
+#print(dico_elt_RAM['registres_r'])
+
+print(analyse_instructions(0))
+print(analyse_instructions(1))
+print(analyse_instructions(2))
+#print(analyse_instructions(3))
+#print(analyse_instructions(4))
 # lignes de codes de tests que je garde de côté au cas où
 
 #print(instruction_ADD('ADD(i1, 0, r1)', [['10', '7', ' 25', ' 14', ' 68', ' 39', ' 50', ' 92', ' 3', ' 61', ' 18'], ['#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'], ['#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#']]))
