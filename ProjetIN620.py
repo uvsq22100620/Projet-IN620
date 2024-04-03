@@ -262,7 +262,7 @@ def analyse_instructions(i_instruc):
         arg2 = match_jumps_spe.group(3)
         arg3 = match_jumps_spe.group(4)
         
-    else :
+    else :    
         raise Exception("L'instruction n'est pas valide")
     
     # Test pas #
@@ -317,12 +317,33 @@ def analyse_instructions(i_instruc):
 
     return [nv_i_instr, dico_elt_RAM]
        
+def analyse_programme(nom_fichier):
 
-info_code_RAM(read_RAM("question1_ex code recherche max.txt"))
-#info_code_RAM(read_RAM("test2.txt"))
+    # Initialisation, création du dictionnaire
+    info_code_RAM(read_RAM(nom_fichier))
 
-print(analyse_instructions(0))
-print(analyse_instructions(1))
+    instructions = dico_elt_RAM["codeRAM"]
+    historique_config = []
+    i_instr_courant = 0
+    fin_fichier = len(dico_elt_RAM["codeRAM"])
+
+    while i_instr_courant < fin_fichier :
+        print(i_instr_courant)
+        res = analyse_instructions(i_instr_courant)
+        i_instr_courant = res[0]    # indice de la prochaine ligne à exécuter
+        historique_config.append(res[1])
+
+    return historique_config
+
+
+### TESTS
+
+#print(analyse_programme("test_simple"))
+analyse_programme("question1_ex code recherche max.txt")
+#analyse_programme("test2.txt")
+
+#print(analyse_instructions(0))
+#print(analyse_instructions(1))
 #print(analyse_instructions(2))
 #print(analyse_instructions(3))
 
