@@ -378,23 +378,42 @@ def analyse_programme(nom_fichier):
     return historique_config
 
 def affichage_resultats(liste_config):
-    for config in liste_config:
-        reg_i = config['registres_i']
-        reg_r = config['registres_r']
-        reg_o = config['registres_o']
+    for i_config in range(len(liste_config)):
+        print('itération '+str(i_config))
+        reg_i = liste_config[i_config]['registres_i']
+        reg_r = liste_config[i_config]['registres_r']
+        reg_o = liste_config[i_config]['registres_o']
+        
         for k in range(len(reg_i)):
-            print(k+str(k)+'  ', end='')
+            print('i'+str(k)+'  ', end='')
+        print('     ', end='')
+        for k in range(len(reg_r)):
+            print('r'+str(k)+'  ', end='')
+        print('     ', end='')
+        for k in range(len(reg_o)):
+            print('o'+str(k)+'  ', end='')
+
         print()
+
+
         for k in range(len(reg_i)):
-            print(reg_i[k]+'  ')
-    return
+            print(str(reg_i[k])+(4-len(str(reg_i[k])))*' ', end='')
+        print('     ', end='')
+        for k in range(len(reg_r)):
+            print(str(reg_r[k])+(4-len(str(reg_r[k])))*' ', end='')
+        print('     ', end='')
+        for k in range(len(reg_o)):
+            print(str(reg_o[k])+(4-len(str(reg_o[k])))*' ', end='')
+        print()
+        print('______________________________________________________________________')
+
+    return 'fin du programme RAM'
 
 
 ### TESTS
 
 #print(analyse_programme("question1_ex code recherche max.txt"))
-print('ok')
-print(affichage_resultats(analyse_programme("test2.txt")))
+#print(affichage_resultats(analyse_programme("test2.txt")))
 #print(analyse_programme("test3.txt"))
 #print(analyse_programme("test4.txt"))
 
