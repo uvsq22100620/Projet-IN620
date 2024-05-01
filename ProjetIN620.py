@@ -14,7 +14,7 @@ regex_chiffre = re.compile(r'-?\d+')
 regex_indirection = re.compile(r'([iro])@([ir])(\d+)')
 regex_instruction = re.compile(r'(ADD|SUB|DIV|MULT)\((\d+|r\d+|i\d+|o\d+|[ir]@[ir]\d+),\s*(\d+|r\d+|i\d+|o\d+|[ir]@[ir]\d+),\s*(\d+|r\d+|o\d+|[ro]@[ir]\d+)\)')
 regex_jump = re.compile(r'(JUMP)\((-?\d+)\)')
-regex_jumps_spe = re.compile(r'(JE|JL)\((\d+|r\d+|i\d+|o\d+|[ir]@[ir]\d+),\s*(\d+|r\d+|i\d+|o\d+|[ir]@[ir]\d+)\)')
+regex_jumps_spe = re.compile(r'(JE|JL)\((\d+|r\d+|i\d+|o\d+|[ir]@[ir]\d+),\s*(\d+|r\d+|i\d+|o\d+|[ir]@[ir]\d+),\s*(\d+)\)')
 
 ## Dico
 dico_type_registre = {'i': "registres_i", 'r':"registres_r", 'o':"registres_o"}
@@ -252,7 +252,7 @@ def analyse_instructions(i_instruc):
         arg3 = match_instruc.group(4)
 
     elif match_jump :
-        print(match_jump)
+        #print(match_jump)
         type_operation = 'JUMP'
         arg1 = int(match_jump.group(2))
         arg2 = '0'
@@ -313,7 +313,7 @@ def analyse_instructions(i_instruc):
 
     else:       # JL
         if arg1 > arg2:
-            nv_i_instr = i_instruc + arg3
+            nv_i_instr = i_instruc + int(arg3)
         else :
             nv_i_instr = i_instruc + 1      
 
@@ -346,9 +346,9 @@ def analyse_programme(nom_fichier):
 
 ### TESTS
 
-#print(analyse_programme("test3.txt"))
+print(analyse_programme("test3.txt"))
 #print(analyse_programme("question1_ex code recherche max.txt"))
-print(analyse_programme("test2.txt"))
+#print(analyse_programme("test2.txt"))
 
 #print(analyse_instructions(0))
 #print(analyse_instructions(1))
