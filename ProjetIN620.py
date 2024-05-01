@@ -14,7 +14,7 @@ regex_chiffre = re.compile(r'-?\d+')
 regex_indirection = re.compile(r'([iro])@([ir])(\d+)')
 regex_instruction = re.compile(r'(ADD|SUB|DIV|MULT)\((\d+|r\d+|i\d+|o\d+|[ir]@[ir]\d+),\s*(\d+|r\d+|i\d+|o\d+|[ir]@[ir]\d+),\s*(\d+|r\d+|o\d+|[ro]@[ir]\d+)\)')
 regex_jump = re.compile(r'(JUMP)\((-?\d+)\)')
-regex_jumps_spe = re.compile(r'(JE|JL)\((\d+|r\d+|i\d+|o\d+|[ir]@[ir]\d+),\s*(\d+|r\d+|i\d+|o\d+|[ir]@[ir]\d+),\s*(\d+)\)')
+regex_jumps_spe = re.compile(r'(JE|JL)\((\d+|r\d+|i\d+|o\d+|[ir]@[ir]\d+),\s*(\d+|r\d+|i\d+|o\d+|[ir]@[ir]\d+),\s*(-?\d+)\)')
 
 ## Dico
 dico_type_registre = {'i': "registres_i", 'r':"registres_r", 'o':"registres_o"}
@@ -306,13 +306,43 @@ def analyse_instructions(i_instruc):
         nv_i_instr = i_instruc + arg1
 
     elif type_operation == 'JE':
-        if arg1 == arg2:
+
+        if not re.match(regex_chiffre, arg1):
+            desc_arg1 = desc_registre(arg1) #permet de récupérer le type de registre et son indice
+
+            if desc_arg1[0] == 'o':
+                raise Exception("L'instruction est erronée. Vous ne pouvez pas lire les registres de type Output")
+            arg1 = int(dico_elt_RAM[dico_type_registre[desc_arg1[0]]][desc_arg1[1]])
+        
+        if not re.match(regex_chiffre, arg2):
+            desc_arg2 = desc_registre(arg2) #permet de récupérer le type de registre et son indice
+
+            if desc_arg2[0] == 'o':
+                raise Exception("L'instruction est erronée. Vous ne pouvez pas lire les registres de type Output")
+            arg2 = int(dico_elt_RAM[dico_type_registre[desc_arg2[0]]][desc_arg2[1]])
+
+        if int(arg1) == int(arg2):
             nv_i_instr = i_instruc + arg3
         else:
             nv_i_instr = i_instruc + 1  
 
     else:       # JL
-        if arg1 > arg2:
+
+        if not re.match(regex_chiffre, arg1):
+            desc_arg1 = desc_registre(arg1) #permet de récupérer le type de registre et son indice
+
+            if desc_arg1[0] == 'o':
+                raise Exception("L'instruction est erronée. Vous ne pouvez pas lire les registres de type Output")
+            arg1 = int(dico_elt_RAM[dico_type_registre[desc_arg1[0]]][desc_arg1[1]])
+        
+        if not re.match(regex_chiffre, arg2):
+            desc_arg2 = desc_registre(arg2) #permet de récupérer le type de registre et son indice
+
+            if desc_arg2[0] == 'o':
+                raise Exception("L'instruction est erronée. Vous ne pouvez pas lire les registres de type Output")
+            arg2 = int(dico_elt_RAM[dico_type_registre[desc_arg2[0]]][desc_arg2[1]])
+
+        if int(arg1) > int(arg2):
             nv_i_instr = i_instruc + int(arg3)
         else :
             nv_i_instr = i_instruc + 1      
@@ -337,8 +367,12 @@ def analyse_programme(nom_fichier):
         print(i_instr_courant)
         print(instructions[i_instr_courant])
         res = analyse_instructions(i_instr_courant)
+        print('reg_r : ', res[1]['registres_r'])
         i_instr_courant = res[0]    # indice de la prochaine ligne à exécuter
-        historique_config.append(res[1])
+        dico_elt_RAM['registres_r'] = res[1]['registres_r'].copy()  # pour régler le problème d'écraser les anciennes listes
+        dico_elt_RAM['registres_o'] = res[1]['registres_o'].copy()
+        nv_dico = {'codeRAM': dico_elt_RAM['codeRAM'], 'registres_i': dico_elt_RAM['registres_i'], 'registres_r': res[1]['registres_r'].copy(), 'registres_o' : res[1]['registres_o'].copy()}
+        historique_config.append(nv_dico)
 
     return historique_config
 
@@ -346,9 +380,10 @@ def analyse_programme(nom_fichier):
 
 ### TESTS
 
-print(analyse_programme("test3.txt"))
 #print(analyse_programme("question1_ex code recherche max.txt"))
 #print(analyse_programme("test2.txt"))
+#print(analyse_programme("test3.txt"))
+print(analyse_programme("test4.txt"))
 
 #print(analyse_instructions(0))
 #print(analyse_instructions(1))
@@ -460,4 +495,4 @@ def lance_app_accueil():
 
 
 # Appel de la fonction pour démarrer l'application
-lance_app_accueil()
+#lance_app_accueil()

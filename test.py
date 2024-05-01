@@ -14,10 +14,12 @@ regex_instruction = re.compile(r'(ADD|SUB|DIV|MULT)\((\d+|r\d+|i\d+|o\d+|[ir]@[i
 res2 = re.match(regex_instruction, 'ADD(i0, 0, r0)')
 
 if res2:
-    print("YES CA MARCHE !!!!!!!!!!!!!!")
+    #print("YES CA MARCHE !!!!!!!!!!!!!!")
     type_operation = res2.group(1)
     arg1 = res2.group(2)
     arg2 = res2.group(3)
     arg3 = res2.group(4)
 
-    print(type_operation, arg1, arg2, arg3)
+    #print(type_operation, arg1, arg2, arg3)
+
+print(int(-1))
