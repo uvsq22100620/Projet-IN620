@@ -262,7 +262,8 @@ def analyse_instructions(i_instruc):
         arg2 = match_jumps_spe.group(3)
         arg3 = match_jumps_spe.group(4)
         
-    else :    
+    else :
+        print(match_jumps_spe)
         raise Exception("L'instruction n'est pas valide")
     
     # Test pas de #
@@ -341,7 +342,7 @@ def analyse_programme(nom_fichier):
 ### TESTS
 
 #print(analyse_programme("test3.txt"))
-#print(analyse_programme("question1_ex code recherche max.txt"))
+print(analyse_programme("question1_ex code recherche max.txt"))
 #print(analyse_programme("test2.txt"))
 
 #print(analyse_instructions(0))
@@ -454,4 +455,4 @@ def lance_app_accueil():
 
 
 # Appel de la fonction pour démarrer l'application
-lance_app_accueil()
+#lance_app_accueil()
