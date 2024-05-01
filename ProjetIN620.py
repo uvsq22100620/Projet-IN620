@@ -264,7 +264,8 @@ def analyse_instructions(i_instruc):
         arg2 = match_jumps_spe.group(3)
         arg3 = match_jumps_spe.group(4)
         
-    else :    
+    else :
+        print(match_jumps_spe)
         raise Exception("L'instruction n'est pas valide")
     
     # Test pas de #
