@@ -1,0 +1,17 @@
+9, 3, 7, 9, 1, 2, 4, 8, 6, 5
+### CODE
+ADD(1, 0, r0)
+ADD(3, 0, r1)
+ADD(r0, 1, r0)
+ADD(r1, 1, r1)
+ADD(i@r0, 0, r@r1)
+JL(i0, r0, -3)
+ADD(2, 0, r0)
+ADD(3, 0, r1)
+JL()
+ADD(r0, 1, r0)
+ADD(r1, 1, r1)
+JL(r@r1, r@r0, -?)
+ADD(r@r1, 0, r3)
+ADD(r@r0, 0, r@r1)
+ADD(r3, 0, r@r0)

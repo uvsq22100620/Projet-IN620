@@ -416,6 +416,7 @@ def affichage_resultats(liste_config):
 #print(affichage_resultats(analyse_programme("test2.txt")))
 #print(analyse_programme("test3.txt"))
 #print(analyse_programme("test4.txt"))
+#print(affichage_resultats(analyse_programme("ApuissanceB.txt")))
 
 #print(analyse_instructions(0))
 #print(analyse_instructions(1))
@@ -434,3 +435,30 @@ def affichage_resultats(liste_config):
 #info_code_RAM(read_RAM("question1_ex code recherche max.txt"))
 #print(instruction_ADD(dico_elt_RAM['codeRAM'][0], [dico_elt_RAM['registres_i'], dico_elt_RAM['registres_r'], dico_elt_RAM['registres_o']]))
 #print(dico_elt_RAM['registres_r'])
+
+
+
+
+##### PARTIE 3 : Optimisation de machine RAM
+
+def creation_graphe(code):
+    dico_graphe = {'D':[0]}
+    for ind_instr in range(len(code)):
+        match_jump = re.match(regex_jump, code[ind_instr])
+        match_jumps_spe = re.match(regex_jumps_spe, code[ind_instr])
+        if match_jump:          # si c'est un JUMP
+            arg1 = int(match_jump.group(2))
+            dico_graphe[str(ind_instr)] = [str(ind_instr+int(arg1))]
+        elif match_jumps_spe:   # si c'est un JE ou JL
+            arg3 = match_jumps_spe.group(4)
+            dico_graphe[str(ind_instr)] = [str(ind_instr+1), str(ind_instr+int(arg3))]
+        else:     # si c'est une instruction ADD, SUB, MULT ou DIV 
+            dico_graphe[str(ind_instr)] = [str(ind_instr+1)]
+    #dico_graphe[str(ind_instr)] += ['F']
+    # remplacer les indices de la derniere ligne imaginaire par le noeud F
+
+    return dico_graphe
+
+
+code = ['ADD(20, 0, o0)', 'JL(i0, 6, 2)', 'ADD(35505, 0, o1)', 'ADD(21, 0, o2)']
+print(creation_graphe(code))
