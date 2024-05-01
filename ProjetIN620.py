@@ -235,6 +235,8 @@ def analyse_instructions(i_instruc):
     '''Fonction permettant l'analyse d'une instruction de la machine RAM à partir d'une configuration. 
     L'indice est renseigné en paramètre et les registres sont récupérés dans le dictionnaire global'''
 
+    global dico_elt_RAM
+
     #récupère la position en cours dans l'execution du code RAM
     instruction = dico_elt_RAM['codeRAM'][i_instruc]
 
@@ -317,7 +319,10 @@ def analyse_instructions(i_instruc):
 
     return [nv_i_instr, dico_elt_RAM]
        
+
 def analyse_programme(nom_fichier):
+
+    global dico_elt_RAM
 
     # Initialisation, création du dictionnaire
     info_code_RAM(read_RAM(nom_fichier))
@@ -338,11 +343,12 @@ def analyse_programme(nom_fichier):
     return historique_config
 
 
+
 ### TESTS
 
 #print(analyse_programme("test3.txt"))
 #print(analyse_programme("question1_ex code recherche max.txt"))
-#print(analyse_programme("test2.txt"))
+print(analyse_programme("test2.txt"))
 
 #print(analyse_instructions(0))
 #print(analyse_instructions(1))
