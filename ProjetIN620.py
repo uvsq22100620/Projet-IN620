@@ -25,7 +25,9 @@ dico_elt_RAM = {}       #dico de stockage des différents éléments de la machi
 ##### PARTIE 1 : Simulation de l'exécution d'une machine RAM
 
 ### Question 1:
-############ à ecire #############
+### Proposer une structure de données qui permet de représenter le programme d’une RAM.
+### Ecrire une fonction qui lit un fichier texte contenant le code d’une machine RAM et un mot d’entrée et qui
+### initialise la structure de données pour représenter cette machine.
 
 def read_RAM(fic_in):
     '''Fonction permettant la lecture du fichier dans laquelle le code d'une Machine RAM est stockée 
@@ -64,8 +66,12 @@ def info_code_RAM(codeRAM):
 
     return dico_elt_RAM
 
+
 ### Question 2:
-############ à ecire #############
+### Proposer une structure de données pour représenter une configuration d’une Machine RAM.
+### Donner une fonction qui prend en argument une machine RAM et une configuration et qui donne la
+### configuration obtenue après un pas de calcul de la machine.
+
 
 def desc_registre(registre):
     '''Fonction qui prend en entrée un registre avec le format i|r|o suivit d'un chiffre (par exemple r0)
@@ -331,7 +337,29 @@ def analyse_instructions(i_instruc):
         if int(arg1) == int(arg2):
             nv_i_instr = i_instruc + arg3
         else:
-            nv_i_instr = i_instruc + 1  
+            nv_i_instr = i_instruc + 1
+
+    ## Nécessaire pour la partie 2
+    elif type_operation == 'JNE':
+
+        if not re.match(regex_chiffre, arg1):
+            desc_arg1 = desc_registre(arg1) #permet de récupérer le type de registre et son indice
+
+            if desc_arg1[0] == 'o':
+                raise Exception("L'instruction est erronée. Vous ne pouvez pas lire les registres de type Output")
+            arg1 = int(dico_elt_RAM[dico_type_registre[desc_arg1[0]]][desc_arg1[1]])
+        
+        if not re.match(regex_chiffre, arg2):
+            desc_arg2 = desc_registre(arg2) #permet de récupérer le type de registre et son indice
+
+            if desc_arg2[0] == 'o':
+                raise Exception("L'instruction est erronée. Vous ne pouvez pas lire les registres de type Output")
+            arg2 = int(dico_elt_RAM[dico_type_registre[desc_arg2[0]]][desc_arg2[1]])
+
+        if int(arg1) != int(arg2):
+            nv_i_instr = i_instruc + arg3
+        else:
+            nv_i_instr = i_instruc + 1
 
     else:       # JL
 
@@ -368,7 +396,9 @@ def analyse_instructions(i_instruc):
 #print(analyse_instructions(4))
        
 ### Question 3:
-############ à ecire #############
+### Ecrire une fonction qui prend comme argument un mot et une machine RAM et qui simule
+### le calcul de la machine sur le mot jusqu’à atteindre l’état final. 
+
 
 def analyse_programme(nom_fichier):
 
@@ -399,8 +429,11 @@ def analyse_programme(nom_fichier):
 #print(analyse_programme("test3.txt"))
 #print(analyse_programme("test4.txt"))
 
+
 ### Question 4:
-############ à ecire #############
+#### Modifier la fonction précédente pour que, à chaque pas de simulation, la configuration de la
+### machine s’affiche de manière compréhensible (soit graphiquement, soit sur le terminal).
+
 
 def affichage_resultats(liste_config):
     for i_config in range(len(liste_config)):
@@ -439,7 +472,7 @@ print(affichage_resultats(analyse_programme("test2.txt")))
 
 
 ### Question 5:
-############ à ecire #############
+############ à ecire ############# ou pas, README ?
 
 #print(affichage_resultats(analyse_programme("ApuissanceB.txt")))
 
@@ -455,6 +488,52 @@ print(affichage_resultats(analyse_programme("test2.txt")))
 #info_code_RAM(read_RAM("question1_ex code recherche max.txt"))
 #print(instruction_ADD(dico_elt_RAM['codeRAM'][0], [dico_elt_RAM['registres_i'], dico_elt_RAM['registres_r'], dico_elt_RAM['registres_o']]))
 #print(dico_elt_RAM['registres_r'])
+
+
+##### PARTIE 2 : Automate à pile
+
+### Question 6 :
+### Ecrire une machine RAM qui étant donné un automate à pile A et un mot w en entrée, écrit
+### 0 en sortie si w est reconnu par A et 1 sinon.
+
+
+def registres_entree(mot_w:str, fic_transitions_A:str):
+    ''' Créér les registres i de la machine RAM qui prend en entrée un mot w et un automate à pile A'''
+
+    # Ecriture de la taille du mot et du mot
+    registres_i = [len(mot_w)]
+    for lettre in mot_w:
+        registres_i.append(lettre)
+
+    # Récupérer les transitions du fichier
+    l_transitions = []
+    fic = open(fic_transitions_A, 'r')
+    for ligne in fic:
+        l_transitions.append(ligne)
+    fic.close()
+
+    # Ecriture du nombre de transitions et des transitions
+    registres_i.append(len(l_transitions))
+    for t in l_transitions:     # pour chaque transition
+        t = eval(t)
+        registres_i.append(t[0])        # q
+        registres_i.append(t[1])        # a
+        registres_i.append(t[2])        # A
+        registres_i.append(len(str(t[3])))       # taille de w
+        for lettre in str(t[3]):
+            registres_i.append(int(lettre))      # lettres de w
+        registres_i.append(t[4])        # q'
+
+    return registres_i
+
+print(registres_entree('01010001', 'automateApile1.txt'))
+
+
+
+### Question 7 :
+### Faire tourner cette machine RAM sur un automate `a pile reconnaissant le langage {anbn | n ∈ N}
+
+
 
 
 
@@ -552,3 +631,70 @@ def ecrit_code_vivant(code_RAM_vivant:list, nom_fichier:str):
 ### ADD(13,0,r1), si dans le graphe le sommet ADD(r1,9,r1) n’a comme prédécesseur que ADD(4,0,r1).
 
 def combine_instr(code_RAM:list):
+    ''' Combine plusieurs instructions en une seule si cela est possible '''
+
+    duo_op_compatibles = [('ADD', 'ADD'), ('ADD', 'SUB'), ('SUB', 'ADD'), ('SUB', 'SUB'),
+                          ('MULT', 'MULT'), ('MULT', 'DIV'), ('DIV', 'MULT'), ('DIV', 'DIV')]
+
+    liste_type_instr = []   # liste qui contiendra le type (ADD, SUB, ...) de chaque instruction
+    liste_arg_instr = []    # liste qui contiendra les arguments des instructions de type ADD, SUB, MULT et DIV (sous forme de tuples)
+
+    for instr in code_RAM:
+        match_instruc = re.match(regex_instruction, instr)
+        if match_instruc:
+            type_operation = match_instruc.group(1)
+            liste_type_instr.append(type_operation)
+            arg1 = match_instruc.group(2)
+            arg2 = match_instruc.group(3)
+            arg3 = match_instruc.group(4)
+            liste_arg_instr.append((arg1, arg2, arg3))
+
+        else:
+            liste_type_instr.append('J')    # pour indiquer que l'instruction n'est pas un ADD ni SUB ni MULT ni DIV
+            liste_arg_instr.append('J')
+    print(liste_type_instr)
+    print(liste_arg_instr)
+
+    for op in range(len(liste_type_instr)-1):
+        if (liste_type_instr[op], liste_type_instr[op+1]) in duo_op_compatibles:
+            arg_op = liste_arg_instr[op]
+            arg_op_suivant = liste_arg_instr[op+1]
+            if (arg_op[2] == arg_op_suivant[0]) and (arg_op_suivant[0] == arg_op_suivant[2]):
+                pass
+            elif (arg_op[2] == arg_op_suivant[1]) and (arg_op_suivant[1] == arg_op_suivant[2]):
+                pass
+
+    return
+
+def combine_instr2(code_RAM:list):
+
+    liste_type_instr = []   # liste qui contiendra le type (ADD, SUB, ...) de chaque instruction
+    liste_arg_instr = []    # liste qui contiendra les arguments des instructions de type ADD, SUB, MULT et DIV (sous forme de tuples)
+
+    for instr in code_RAM:
+        match_instruc = re.match(regex_instruction, instr)
+        if match_instruc:
+            type_operation = match_instruc.group(1)
+            liste_type_instr.append(type_operation)
+            arg1 = match_instruc.group(2)
+            arg2 = match_instruc.group(3)
+            arg3 = match_instruc.group(4)
+            liste_arg_instr.append((arg1, arg2, arg3))
+
+        else:
+            liste_type_instr.append('J')    # pour indiquer que l'instruction n'est pas un ADD ni SUB ni MULT ni DIV
+            liste_arg_instr.append('J')
+
+    for op in range(len(liste_type_instr)-1):
+        if liste_type_instr[op] == 'ADD' and liste_type_instr[op+1] == 'ADD':
+            arg_op = liste_arg_instr[op]
+            arg_op_suivant = liste_arg_instr[op+1]
+            if (arg_op[2] == arg_op_suivant[0]) and (arg_op_suivant[0] == arg_op_suivant[2]):            
+                # Ajout de la nouvelle instruction
+                valeur = liste_arg_instr[op][0] + liste_arg_instr[op][1] + liste_arg_instr[op+1][1]
+                code_RAM[op] = 'ADD(' + str(valeur) + ', 0' + liste_arg_instr[op+1][2] + ')'    # remplacer l'instruction
+                code_RAM.pop(op+1)  # Supprimer l'instruction
+        return
+    
+
+#combine_instr(['ADD(1, 0, o0)', 'ADD(2, 0, o1)', 'JUMP(2)', 'ADD(3, 0, o2)', 'ADD(4, 0, o3)'])

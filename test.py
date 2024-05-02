@@ -22,4 +22,22 @@ if res2:
 
     #print(type_operation, arg1, arg2, arg3)
 
-print(int(-1))
+#print(int(-1))
+
+
+def combine_instr(code_RAM:list):
+    ''' Combine plusieurs instructions en une seule si cela est possible '''
+
+    duo_op_compatibles = [('ADD', 'ADD'), ('ADD', 'SUB'), ('SUB', 'ADD'), ('SUB', 'SUB'),
+                          ('MULT', 'MULT'), ('MULT', 'DIV'), ('DIV', 'MULT'), ('DIV', 'DIV')]
+
+    liste_type_instr = []   # liste qui contiendra le type (ADD, SUB, ...) de chaque instruction
+    liste_arg_instr = []    # liste qui contiendra les arguments des instructions de type ADD, SUB, MULT et DIV (sous forme de tuples)
+
+    for instr in code_RAM:
+        match_instruc = re.match(regex_instruction, instr)
+        if match_instruc:
+            pass
+    return
+
+print(eval('(1, 2)'))
