@@ -49,7 +49,7 @@ def info_code_RAM(codeRAM):
     taille = int(entree[0])             #taille de l'entrée
     
     #ajoute dans notre registre input l'entrée obtenue
-    for i in range(0, taille+1) :   
+    for i in range(taille+1) :   
         registres_i.append(entree[i])
     
     #Création des listes correspondant aux registre de type r et o avec une taille correspondant à 2 fois celle de l'entrée (taille arbitraire)
