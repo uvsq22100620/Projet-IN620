@@ -441,9 +441,23 @@ def affichage_resultats(liste_config):
 
 ##### PARTIE 3 : Optimisation de machine RAM
 
+### Question 8 :
+### On va représenter le code de la RAM de manière structurée par un graphe orienté. Chaque
+### instruction est représentée par un sommet du graphe. Il y a un arc entre deux instructions si on peut
+### passer de la première à la seconde en un pas de calcul. Donner une fonction qui créé ce graphe à partir
+### du code d’une machine. Les instructions arithmétiques et le JUMP sont de degré sortant 1, tandis que les
+### instructions conditionnelles sont de degré sortant 2.
+
+
+# /!\ gérer le cas quand des JUMP font référence à des lignes après la fin des instructions
+
 def creation_graphe(code):
+    ''' Créé le graphe (représenté sous forme d'un dictionnaire de la machine RAM dont le code est donné en entrée'''
+
+    # Initialisation du dictionnaire avec le sommet de départ D pointant vers la première instruction
     dico_graphe = {'D':[0]}
-    for ind_instr in range(len(code)):
+
+    for ind_instr in range(len(code)):      # pour chaque instruction
         match_jump = re.match(regex_jump, code[ind_instr])
         match_jumps_spe = re.match(regex_jumps_spe, code[ind_instr])
         if match_jump:          # si c'est un JUMP
@@ -455,10 +469,60 @@ def creation_graphe(code):
         else:     # si c'est une instruction ADD, SUB, MULT ou DIV 
             dico_graphe[str(ind_instr)] = [str(ind_instr+1)]
     #dico_graphe[str(ind_instr)] += ['F']
-    # remplacer les indices de la derniere ligne imaginaire par le noeud F
+    # remplacer les indices supérieurs ou égaux à ceux de la derniere ligne imaginaire par le noeud F
 
     return dico_graphe
 
+#code = ['ADD(20, 0, o0)', 'JL(i0, 6, 2)', 'ADD(35505, 0, o1)', 'ADD(21, 0, o2)']
+#graphe_RAM = creation_graphe(code)
+#print(graphe_RAM)
 
-code = ['ADD(20, 0, o0)', 'JL(i0, 6, 2)', 'ADD(35505, 0, o1)', 'ADD(21, 0, o2)']
-print(creation_graphe(code))
+
+### Question 9
+### On va appliquer une optimisation d’élimination du code mort. A partir du graphe représentant `
+### le code, calculer tous les sommets accessibles à partir de la première instruction.
+### Tous les sommets non accessibles correspondent à des instructions qui ne seront jamais exécutées.
+### Supprimer ces instructions dans votre code.
+
+
+def elim_code_mort(code_RAM:list, graphe_RAM:dict):
+    ''' Elimine de la machine RAM les instructions qui ne seront jamais exécutées'''
+
+    # Stockage des instructions pouvant être atteintes
+    instr_executees = []
+    for instr_atteinte in graphe_RAM.values():
+        for i in instr_atteinte:
+            instr_executees.append(int(i))
+    instr_executees = set(instr_executees)
+    print('IE : ', instr_executees)
+
+    # Vérification qu'il n'existe pas d'autres instructions
+    instr_non_atteintes = []
+    for instr in range(len(code_RAM)):
+        if instr not in instr_executees:
+            instr_non_atteintes.append(instr)
+    print('INA : ', instr_non_atteintes)
+    
+    # Suppression des instructions jamais atteintes
+    code_RAM_vivant = code_RAM.copy() # code_RAM sans le code mort
+    if instr_non_atteintes != []:       # s'il y a une ou plusieurs instructions à enlever
+        for instr in instr_non_atteintes:
+            code_RAM_vivant.pop(instr)
+    
+    return code_RAM_vivant
+
+def ecrit_code_vivant(code_RAM_vivant:list, nom_fichier:str):
+    ''' Ecris le code de la machine RAM dans un nouveau fichier'''
+
+    fic = open(nom_fichier, 'w')
+    for ligne in code_RAM_vivant:
+        fic.write(ligne+'\n')
+    fic.close()
+
+    return
+
+#code = ['ADD(1, 0, o0)', 'ADD(2, 0, o1)', 'JUMP(2)', 'ADD(3, 0, o2)', 'ADD(4, 0, o3)']
+#graphe_RAM = creation_graphe(code)
+#ecrit_code_vivant(elim_code_mort(code, graphe_RAM), 'code_vivant.txt')
+
+
