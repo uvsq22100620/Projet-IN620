@@ -552,5 +552,3 @@ def ecrit_code_vivant(code_RAM_vivant:list, nom_fichier:str):
 ### ADD(13,0,r1), si dans le graphe le sommet ADD(r1,9,r1) n’a comme prédécesseur que ADD(4,0,r1).
 
 def combine_instr(code_RAM:list):
-    ''''''
-    pass
