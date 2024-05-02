@@ -472,6 +472,35 @@ print(affichage_resultats(analyse_programme("test2.txt")))
 #r4 -> va permettre de stocker les tailles des mots à écrire dans la pile
 #r5 -> fond de pile donc doit mettre 0
 
+def registres_entree(mot_w:str, fic_transitions_A:str):
+    ''' Créér les registres i de la machine RAM qui prend en entrée un mot w et un automate à pile A'''
+
+    # Ecriture de la taille du mot et du mot
+    registres_i = [len(mot_w)]
+    for lettre in mot_w:
+        registres_i.append(lettre)
+
+    # Récupérer les transitions du fichier
+    l_transitions = []
+    fic = open(fic_transitions_A, 'r')
+    for ligne in fic:
+        l_transitions.append(ligne)
+    fic.close()
+
+    # Ecriture du nombre de transitions et des transitions
+    registres_i.append(len(l_transitions))
+    for t in l_transitions:     # pour chaque transition
+        t = eval(t)
+        registres_i.append(t[0])        # q
+        registres_i.append(t[1])        # a
+        registres_i.append(t[2])        # A
+        registres_i.append(len(str(t[3])))       # taille de w
+        for lettre in str(t[3]):
+            registres_i.append(int(lettre))      # lettres de w
+        registres_i.append(t[4])        # q'
+
+    return registres_i
+
 def initialisation_registre_AP(nameFile):
     '''Fonction permettant la génération des lignes de code RAM l'initialisation des registres pour la simulation d'un automate 
     à pile avec une machine RAM'''
@@ -526,8 +555,11 @@ def transformation_transition(nameFile):
         #Changement de l'état courant
         fc.write('ADD(i@r3, 0, r0)\n')
 
-def GenerationRAM(nameFile):
+def GenerationRAM(nameFile, mot_w):
     '''Fonction principale permettant la simulation d'un automate à pile avec une machine RAM'''
+
+    #Initialisation des registres de l'entrée
+    
 
     #Initialise les registres pour convertir l'automate à pile en code RAM
     initialisation_registre_AP(nameFile)
