@@ -25,7 +25,9 @@ dico_elt_RAM = {}       #dico de stockage des différents éléments de la machi
 ##### PARTIE 1 : Simulation de l'exécution d'une machine RAM
 
 ### Question 1:
-############ à ecire #############
+### Proposer une structure de données qui permet de représenter le programme d’une RAM.
+### Ecrire une fonction qui lit un fichier texte contenant le code d’une machine RAM et un mot d’entrée et qui
+### initialise la structure de données pour représenter cette machine.
 
 def read_RAM(fic_in):
     '''Fonction permettant la lecture du fichier dans laquelle le code d'une Machine RAM est stockée 
@@ -64,8 +66,12 @@ def info_code_RAM(codeRAM):
 
     return dico_elt_RAM
 
+
 ### Question 2:
-############ à ecire #############
+### Proposer une structure de données pour représenter une configuration d’une Machine RAM.
+### Donner une fonction qui prend en argument une machine RAM et une configuration et qui donne la
+### configuration obtenue après un pas de calcul de la machine.
+
 
 def desc_registre(registre):
     '''Fonction qui prend en entrée un registre avec le format i|r|o suivit d'un chiffre (par exemple r0)
@@ -368,7 +374,9 @@ def analyse_instructions(i_instruc):
 #print(analyse_instructions(4))
        
 ### Question 3:
-############ à ecire #############
+### Ecrire une fonction qui prend comme argument un mot et une machine RAM et qui simule
+### le calcul de la machine sur le mot jusqu’à atteindre l’état final. 
+
 
 def analyse_programme(nom_fichier):
 
@@ -399,8 +407,11 @@ def analyse_programme(nom_fichier):
 #print(analyse_programme("test3.txt"))
 #print(analyse_programme("test4.txt"))
 
+
 ### Question 4:
-############ à ecire #############
+#### Modifier la fonction précédente pour que, à chaque pas de simulation, la configuration de la
+### machine s’affiche de manière compréhensible (soit graphiquement, soit sur le terminal).
+
 
 def affichage_resultats(liste_config):
     for i_config in range(len(liste_config)):
@@ -439,7 +450,7 @@ print(affichage_resultats(analyse_programme("test2.txt")))
 
 
 ### Question 5:
-############ à ecire #############
+############ à ecire ############# ou pas, README ?
 
 #print(affichage_resultats(analyse_programme("ApuissanceB.txt")))
 
@@ -460,7 +471,8 @@ print(affichage_resultats(analyse_programme("test2.txt")))
 ##### PARTIE 2 : Automate à pile
 
 ### Question 6 :
-
+### Ecrire une machine RAM qui étant donné un automate à pile A et un mot w en entrée, écrit
+### 0 en sortie si w est reconnu par A et 1 sinon.
 
 
 def registres_entree(mot_w:str, fic_transitions_A:str):
@@ -493,6 +505,15 @@ def registres_entree(mot_w:str, fic_transitions_A:str):
     return registres_i
 
 print(registres_entree('01010001', 'automateApile1.txt'))
+
+
+
+### Question 7 :
+### Faire tourner cette machine RAM sur un automate `a pile reconnaissant le langage {anbn | n ∈ N}
+
+
+
+
 
 
 ##### PARTIE 3 : Optimisation de machine RAM
