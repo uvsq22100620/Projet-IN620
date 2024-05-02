@@ -337,7 +337,29 @@ def analyse_instructions(i_instruc):
         if int(arg1) == int(arg2):
             nv_i_instr = i_instruc + arg3
         else:
-            nv_i_instr = i_instruc + 1  
+            nv_i_instr = i_instruc + 1
+
+    ## Nécessaire pour la partie 2
+    elif type_operation == 'JNE':
+
+        if not re.match(regex_chiffre, arg1):
+            desc_arg1 = desc_registre(arg1) #permet de récupérer le type de registre et son indice
+
+            if desc_arg1[0] == 'o':
+                raise Exception("L'instruction est erronée. Vous ne pouvez pas lire les registres de type Output")
+            arg1 = int(dico_elt_RAM[dico_type_registre[desc_arg1[0]]][desc_arg1[1]])
+        
+        if not re.match(regex_chiffre, arg2):
+            desc_arg2 = desc_registre(arg2) #permet de récupérer le type de registre et son indice
+
+            if desc_arg2[0] == 'o':
+                raise Exception("L'instruction est erronée. Vous ne pouvez pas lire les registres de type Output")
+            arg2 = int(dico_elt_RAM[dico_type_registre[desc_arg2[0]]][desc_arg2[1]])
+
+        if int(arg1) != int(arg2):
+            nv_i_instr = i_instruc + arg3
+        else:
+            nv_i_instr = i_instruc + 1
 
     else:       # JL
 
