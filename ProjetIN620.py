@@ -468,14 +468,14 @@ def affichage_resultats(liste_config):
     return 'fin du programme RAM'
 
 #print(analyse_programme("question1_ex code recherche max.txt"))
-print(affichage_resultats(analyse_programme("test2.txt")))
+#print(affichage_resultats(analyse_programme("test2.txt")))
 
 
 ### Question 5:
 ############ à ecire ############# ou pas, README ?
 
 #print(affichage_resultats(analyse_programme("ApuissanceB.txt")))
-
+print(affichage_resultats(analyse_programme("triAbulle.txt")))
 
 
 
@@ -526,7 +526,7 @@ def registres_entree(mot_w:str, fic_transitions_A:str):
 
     return registres_i
 
-print(registres_entree('01010001', 'automateApile1.txt'))
+#print(registres_entree('01010001', 'automateApile1.txt'))
 
 
 
