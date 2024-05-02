@@ -24,6 +24,9 @@ dico_elt_RAM = {}       #dico de stockage des différents éléments de la machi
 
 ##### PARTIE 1 : Simulation de l'exécution d'une machine RAM
 
+### Question 1:
+############ à ecire #############
+
 def read_RAM(fic_in):
     '''Fonction permettant la lecture du fichier dans laquelle le code d'une Machine RAM est stockée 
     et retourne l'ensemble du code dans une liste dont chaque elt correspond à une ligne du code'''
@@ -60,6 +63,9 @@ def info_code_RAM(codeRAM):
     dico_elt_RAM["registres_o"] = registres_o
 
     return dico_elt_RAM
+
+### Question 2:
+############ à ecire #############
 
 def desc_registre(registre):
     '''Fonction qui prend en entrée un registre avec le format i|r|o suivit d'un chiffre (par exemple r0)
@@ -349,7 +355,20 @@ def analyse_instructions(i_instruc):
             nv_i_instr = i_instruc + 1      
 
     return [nv_i_instr, dico_elt_RAM]
+
+#print(analyse_instructions(0))
+#print(analyse_instructions(1))
+#print(analyse_instructions(2))
+#print(analyse_instructions(3))
+
+#print(analyse_instructions(0))
+#print(analyse_instructions(1))
+#print(analyse_instructions(2))
+#print(analyse_instructions(3))
+#print(analyse_instructions(4))
        
+### Question 3:
+############ à ecire #############
 
 def analyse_programme(nom_fichier):
 
@@ -376,6 +395,12 @@ def analyse_programme(nom_fichier):
         historique_config.append(nv_dico)
 
     return historique_config
+
+#print(analyse_programme("test3.txt"))
+#print(analyse_programme("test4.txt"))
+
+### Question 4:
+############ à ecire #############
 
 def affichage_resultats(liste_config):
     for i_config in range(len(liste_config)):
@@ -409,25 +434,20 @@ def affichage_resultats(liste_config):
 
     return 'fin du programme RAM'
 
-
-### TESTS
-
 #print(analyse_programme("question1_ex code recherche max.txt"))
 #print(affichage_resultats(analyse_programme("test2.txt")))
-#print(analyse_programme("test3.txt"))
-#print(analyse_programme("test4.txt"))
+
+
+### Question 5:
+############ à ecire #############
+
 #print(affichage_resultats(analyse_programme("ApuissanceB.txt")))
 
-#print(analyse_instructions(0))
-#print(analyse_instructions(1))
-#print(analyse_instructions(2))
-#print(analyse_instructions(3))
 
-#print(analyse_instructions(0))
-#print(analyse_instructions(1))
-#print(analyse_instructions(2))
-#print(analyse_instructions(3))
-#print(analyse_instructions(4))
+
+
+
+
 # lignes de codes de tests que je garde de côté au cas où
 
 #print(instruction_ADD('ADD(i1, 0, r1)', [['10', '7', ' 25', ' 14', ' 68', ' 39', ' 50', ' 92', ' 3', ' 61', ' 18'], ['#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'], ['#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#']]))
@@ -526,3 +546,9 @@ def ecrit_code_vivant(code_RAM_vivant:list, nom_fichier:str):
 #ecrit_code_vivant(elim_code_mort(code, graphe_RAM), 'code_vivant.txt')
 
 
+### Question 10 (BONUS):
+### Proposer une méthode pour combiner plusieurs instructions en une seule. Par
+### exemple, les deux instructions consécutives ADD(4,0,r1), ADD(r1,9,r1) peuvent être remplacées par
+### ADD(13,0,r1), si dans le graphe le sommet ADD(r1,9,r1) n’a comme prédécesseur que ADD(4,0,r1).
+
+def combine_instr(code_RAM:list):
