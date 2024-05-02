@@ -22,7 +22,7 @@ if res2:
 
     #print(type_operation, arg1, arg2, arg3)
 
-print(int(-1))
+#print(int(-1))
 
 
 def combine_instr(code_RAM:list):
@@ -37,25 +37,7 @@ def combine_instr(code_RAM:list):
     for instr in code_RAM:
         match_instruc = re.match(regex_instruction, instr)
         if match_instruc:
-            type_operation = match_instruc.group(1)
-            liste_type_instr.append(type_operation)
-            arg1 = match_instruc.group(2)
-            arg2 = match_instruc.group(3)
-            arg3 = match_instruc.group(4)
-            liste_arg_instr.append((arg1, arg2, arg3))
-
-        else:
-            liste_type_instr.append('J')    # pour indiquer que l'instruction n'est pas un ADD ni SUB ni MULT ni DIV
-            liste_arg_instr.append('J')
-    print(liste_type_instr)
-    print(liste_arg_instr)
-
-    for op in range(len(liste_type_instr)-1):
-        if (liste_type_instr[op], liste_type_instr[op+1]) in duo_op_compatibles:
-            arg_op = liste_arg_instr[op]
-            arg_op_suivant = liste_arg_instr[op+1]
-            #if liste_arg_instr[op]
-
+            pass
     return
 
-combine_instr(['ADD(1, 0, o0)', 'ADD(2, 0, o1)', 'JUMP(2)', 'ADD(3, 0, o2)', 'ADD(4, 0, o3)'])
+print(eval('(1, 2)'))
