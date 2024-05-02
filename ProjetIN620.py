@@ -49,9 +49,9 @@ def info_code_RAM(codeRAM):
     taille = int(entree[0])             #taille de l'entrée
     
     #ajoute dans notre registre input l'entrée obtenue
-    for i in range(1, taille+1) :       
+    for i in range(taille+1) :   
         registres_i.append(entree[i])
-
+    
     #Création des listes correspondant aux registre de type r et o avec une taille correspondant à 2 fois celle de l'entrée (taille arbitraire)
     registres_r = ['#' for i in range(0, taille*2)]
     registres_o = ['#' for i in range(0, taille*2)]
@@ -435,7 +435,7 @@ def affichage_resultats(liste_config):
     return 'fin du programme RAM'
 
 #print(analyse_programme("question1_ex code recherche max.txt"))
-#print(affichage_resultats(analyse_programme("test2.txt")))
+print(affichage_resultats(analyse_programme("test2.txt")))
 
 
 ### Question 5:
