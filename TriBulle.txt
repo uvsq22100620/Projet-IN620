@@ -11,13 +11,13 @@ ADD(i@r0, 0, r@r1)
 JL(i0, r0, -3)
 
 # tri à bulle : on pointe sur deux éléments consécutifs et on les compare
-ADD(i0, 1, r2)      # pointeur sur le dernier élément trié
-JE(2, r2, 12)       # si le tableau est trié
+ADD(i0, 0, r2)      # pointeur sur le dernier élément trié
+JE(r2, 2, 12)       # si le tableau est trié
 ADD(2, 0, r0)       # 1er pointeur : element de droite     
 ADD(3, 0, r1)       # 2ème pointeur : element qui suit
 
-JL(i0, r1, -3)    # si on a tout vérifié
 SUB(r2, 1, r2)      # on vient de trier un élément
+JL(r1, i0, -3)      # si on a tout vérifié
 ADD(r0, 1, r0)      # incrémentation du 1er pointeur
 ADD(r1, 1, r1)      # incrémentation du 2ème pointeur
 JL(r@r1, r@r0, -4)  # si celui de gauche est plus grand que celui de droite : on ne doit pas échanger
