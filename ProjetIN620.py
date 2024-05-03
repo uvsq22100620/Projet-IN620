@@ -476,7 +476,7 @@ def affichage_resultats(liste_config):
 ############ à ecire ############# ou pas, README ?
 
 #print(affichage_resultats(analyse_programme("ApuissanceB.txt")))
-print(affichage_resultats(analyse_programme("triAbulle.txt")))
+print(analyse_programme("triAbulle.txt"))
 
 
 
