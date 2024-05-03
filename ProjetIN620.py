@@ -242,10 +242,6 @@ def gestion_indirection(registre):
 
     return registre_type + indice
 
-# Affichage des résultats de la question 1 :
-#info_code_RAM(read_RAM("question1_ex code recherche max.txt"))
-
-
 
 def analyse_instructions(i_instruc):
     '''Fonction permettant l'analyse d'une instruction de la machine RAM à partir d'une configuration. 
@@ -388,6 +384,9 @@ def analyse_instructions(i_instruc):
 
     return [nv_i_instr, dico_elt_RAM]
 
+
+# Affichage des résultats de la question 2 :
+
 #print(analyse_instructions(0))
 #print(analyse_instructions(1))
 #print(analyse_instructions(2))
@@ -398,7 +397,8 @@ def analyse_instructions(i_instruc):
 #print(analyse_instructions(2))
 #print(analyse_instructions(3))
 #print(analyse_instructions(4))
-       
+
+
 ### Question 3:
 ### Ecrire une fonction qui prend comme argument un mot et une machine RAM et qui simule
 ### le calcul de la machine sur le mot jusqu’à atteindre l’état final. 
@@ -430,8 +430,8 @@ def analyse_programme(nom_fichier):
 
     return historique_config
 
+# Affichage des résultats de la question 3 :
 #print(analyse_programme("test3.txt"))
-#print(analyse_programme("test4.txt"))
 
 
 ### Question 4:
@@ -509,12 +509,18 @@ def affichage_resultats_fichier(liste_config:list, nom_fichier:str):
 
     return
 
+# Affichage des résultats de la question 4 :
 #print(analyse_programme("question1_ex code recherche max.txt"))
-#print(affichage_resultats(analyse_programme("test2.txt")))
+#print(affichage_resultats_terminal(analyse_programme("test2.txt")))
+#print(affichage_resultats_fichier(analyse_programme("test2.txt")))
 
 
 ### Question 5:
-############ à ecire ############# ou pas, README ?
+### Donner le code des machines de RAM suivantes :
+### - Avec en entrée deux entiers a et b, calculer a^b => fichier ApuissanceB.txt
+### - Avec comme entrée un tableau d’entiers, écrire le tableau trié dans la sortie (par un tri à bulle) => fichier triAbull.txt
+
+
 
 print(affichage_resultats_terminal(analyse_programme("ApuissanceB.txt")))
 #print(affichage_resultats_fichier(analyse_programme("triAbulle.txt"), 'res_tri_bulle.txt'))
