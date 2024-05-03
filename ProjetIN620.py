@@ -512,8 +512,8 @@ def affichage_resultats_fichier(liste_config:list, nom_fichier:str):
 ### Question 5:
 ############ à ecire ############# ou pas, README ?
 
-#print(affichage_resultats(analyse_programme("ApuissanceB.txt")))
-print(affichage_resultats_fichier(analyse_programme("triAbulle.txt"), 'res_tri_bulle.txt'))
+print(affichage_resultats_terminal(analyse_programme("ApuissanceB.txt")))
+#print(affichage_resultats_fichier(analyse_programme("triAbulle.txt"), 'res_tri_bulle.txt'))
 
 
 
