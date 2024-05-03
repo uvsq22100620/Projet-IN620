@@ -335,7 +335,6 @@ def analyse_instructions(i_instruc):
             arg2 = int(dico_elt_RAM[dico_type_registre[desc_arg2[0]]][desc_arg2[1]])
 
         if int(arg1) == int(arg2):
-            print(int(arg1), int(arg2))
             nv_i_instr = int(i_instruc) + int(arg3)
         else:
             nv_i_instr = int(i_instruc) + 1
@@ -415,10 +414,10 @@ def analyse_programme(nom_fichier):
     fin_fichier = len(dico_elt_RAM["codeRAM"])
 
     while i_instr_courant < fin_fichier :
-        print(i_instr_courant)
-        print(instructions[i_instr_courant])
+        #print(i_instr_courant)
+        #print(instructions[i_instr_courant])
         res = analyse_instructions(i_instr_courant)
-        print('reg_r : ', res[1]['registres_r'])
+        #print('reg_o : ', res[1]['registres_o'])
         i_instr_courant = res[0]    # indice de la prochaine ligne à exécuter
         dico_elt_RAM['registres_r'] = res[1]['registres_r'].copy()  # pour régler le problème d'écraser les anciennes listes
         dico_elt_RAM['registres_o'] = res[1]['registres_o'].copy()
@@ -436,7 +435,7 @@ def analyse_programme(nom_fichier):
 ### machine s’affiche de manière compréhensible (soit graphiquement, soit sur le terminal).
 
 
-def affichage_resultats(liste_config):
+def affichage_resultats_terminal(liste_config):
     for i_config in range(len(liste_config)):
         print('itération '+str(i_config))
         reg_i = liste_config[i_config]['registres_i']
@@ -468,6 +467,44 @@ def affichage_resultats(liste_config):
 
     return 'fin du programme RAM'
 
+
+def affichage_resultats_fichier(liste_config:list, nom_fichier:str):
+
+    fic = open(nom_fichier, 'w')
+    
+    for i_config in range(len(liste_config)):
+        fic.write('iteration '+str(i_config)+'\n')
+        reg_i = liste_config[i_config]['registres_i']
+        reg_r = liste_config[i_config]['registres_r']
+        reg_o = liste_config[i_config]['registres_o']
+        
+        for k in range(len(reg_i)):
+            fic.write('i'+str(k)+'  ')
+        fic.write('     ')
+        for k in range(len(reg_r)):
+            fic.write('r'+str(k)+'  ')
+        fic.write('     ')
+        for k in range(len(reg_o)):
+            fic.write('o'+str(k)+'  ')
+
+        fic.write('\n')
+
+
+        for k in range(len(reg_i)):
+            fic.write(str(reg_i[k])+(4-len(str(reg_i[k])))*' ')
+        fic.write('     ')
+        for k in range(len(reg_r)):
+            fic.write(str(reg_r[k])+(4-len(str(reg_r[k])))*' ')
+        fic.write('     ')
+        for k in range(len(reg_o)):
+            fic.write(str(reg_o[k])+(4-len(str(reg_o[k])))*' ')
+        fic.write('\n')
+        fic.write('______________________________________________________________________\n')
+
+    fic.close()
+
+    return
+
 #print(analyse_programme("question1_ex code recherche max.txt"))
 #print(affichage_resultats(analyse_programme("test2.txt")))
 
@@ -476,7 +513,7 @@ def affichage_resultats(liste_config):
 ############ à ecire ############# ou pas, README ?
 
 #print(affichage_resultats(analyse_programme("ApuissanceB.txt")))
-print(analyse_programme("triAbulle.txt"))
+print(affichage_resultats_fichier(analyse_programme("triAbulle.txt"), 'res_tri_bulle.txt'))
 
 
 
