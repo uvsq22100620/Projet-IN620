@@ -66,6 +66,9 @@ def info_code_RAM(codeRAM):
 
     return dico_elt_RAM
 
+# Affichage des résultats de la question 1 :
+#print(read_RAM('test2.txt))
+
 
 ### Question 2:
 ### Proposer une structure de données pour représenter une configuration d’une Machine RAM.
@@ -239,8 +242,9 @@ def gestion_indirection(registre):
 
     return registre_type + indice
 
+# Affichage des résultats de la question 1 :
 #info_code_RAM(read_RAM("question1_ex code recherche max.txt"))
-#print(gestion_indirection('i@i1'))
+
 
 
 def analyse_instructions(i_instruc):
@@ -736,3 +740,30 @@ def combine_instr2(code_RAM:list):
     
 
 #combine_instr(['ADD(1, 0, o0)', 'ADD(2, 0, o1)', 'JUMP(2)', 'ADD(3, 0, o2)', 'ADD(4, 0, o3)'])
+
+
+def execute_projet():
+    print('Question 1 :')
+    print()
+    print('Question 2 :')
+    print()
+    print('Question 3 :')
+    print()
+    print('Question 4 :')
+    print()
+    print('Question 5 :')
+    print()
+    print('Question 6 :')
+    print()
+    print('Question 7 :')
+    print()
+    print('Question 8 :')
+    print()
+    print('Question 9 :')
+    print()
+    print('Question 10 :')
+    print()
+
+    return
+
+execute_projet()
