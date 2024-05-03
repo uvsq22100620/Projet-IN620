@@ -335,9 +335,10 @@ def analyse_instructions(i_instruc):
             arg2 = int(dico_elt_RAM[dico_type_registre[desc_arg2[0]]][desc_arg2[1]])
 
         if int(arg1) == int(arg2):
-            nv_i_instr = i_instruc + arg3
+            print(int(arg1), int(arg2))
+            nv_i_instr = int(i_instruc) + int(arg3)
         else:
-            nv_i_instr = i_instruc + 1
+            nv_i_instr = int(i_instruc) + 1
 
     ## Nécessaire pour la partie 2
     elif type_operation == 'JNE':
@@ -357,7 +358,7 @@ def analyse_instructions(i_instruc):
             arg2 = int(dico_elt_RAM[dico_type_registre[desc_arg2[0]]][desc_arg2[1]])
 
         if int(arg1) != int(arg2):
-            nv_i_instr = i_instruc + arg3
+            nv_i_instr = i_instruc + int(arg3)
         else:
             nv_i_instr = i_instruc + 1
 
@@ -378,9 +379,9 @@ def analyse_instructions(i_instruc):
             arg2 = int(dico_elt_RAM[dico_type_registre[desc_arg2[0]]][desc_arg2[1]])
 
         if int(arg1) > int(arg2):
-            nv_i_instr = i_instruc + int(arg3)
+            nv_i_instr = int(i_instruc) + int(arg3)
         else :
-            nv_i_instr = i_instruc + 1      
+            nv_i_instr = int(i_instruc) + 1      
 
     return [nv_i_instr, dico_elt_RAM]
 

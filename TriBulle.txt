@@ -12,9 +12,9 @@ JL(i0, r0, -3)
 
 # tri à bulle : on pointe sur deux éléments consécutifs et on les compare
 ADD(i0, 0, r2)      # pointeur sur le dernier élément trié
+ADD(3, 0, r0)       # 1er pointeur : element de droite     
+ADD(4, 0, r1)       # 2ème pointeur : element qui suit
 JE(r2, 2, 12)       # si le tableau est trié
-ADD(2, 0, r0)       # 1er pointeur : element de droite     
-ADD(3, 0, r1)       # 2ème pointeur : element qui suit
 
 SUB(r2, 1, r2)      # on vient de trier un élément
 JL(r1, i0, -3)      # si on a tout vérifié
