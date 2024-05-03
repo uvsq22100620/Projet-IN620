@@ -9,9 +9,9 @@ Vous pouvez évidemment modifier les paramètres des fonctions, comme en testant
 
 ### PARTIE 1 : Simulation de l'exécution d'une machine RAM
 
-Dire comment on représenter une machine RAM
+Dire comment on représente une machine RAM
 
-Nous avons représenter une configuration d'une machine RAM comme. Quand les instructions du code RAM sont exécutées sur l'entrée donnée, les différentes configurations sont stockées dans une liste, affichée sur le terminal.
+Nous avons représenté une configuration d'une machine RAM comme... Quand les instructions du code RAM sont exécutées sur l'entrée donnée, les différentes configurations sont stockées dans une liste, affichée sur le terminal.
 
 Nous avons aussi fait un affichage sur le terminal pour visualiser l'état des registres après chaque instruction.
 
