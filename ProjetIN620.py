@@ -659,8 +659,10 @@ def generation_CodeRAM(nameFile):
         fc.write('JUMP(-39)\n')           #Recommence le test des transitions pour la nouvelle lettre
 
         #Mot reconnu
-        fc.write('JNE(r0, 1, 2)\n')     #Si l'état courant n'est pas l'état final alors le mot n'est pas reconnu
-        fc.write('ADD(0, 0, o0)\n')  
+        fc.write('JNE(r0, 1, 4)\n')     #Si l'état courant n'est pas l'état final alors le mot n'est pas reconnu
+        fc.write('JNE(r@r1, 0, 3)\n')   #Si l'état courant est l'état final mais que la pile n'est pas vide alors mot pas reconnu
+        fc.write('ADD(0, 0, o0)\n')     #Si état final et pile vide alors mot reconnu
+        fc.write('JUMP(2)\n')
         #Mot non reconnu
         fc.write('ADD(1, 0, o0)\n')  
 
@@ -690,10 +692,13 @@ def simulationAP(nameFile, mot, fic_transitions):
 
     return
 
-#print(simulationAP('codeRAMtest1.txt', '11110000', 'automateApile.txt'))
+print(simulationAP('codeRAMtestNegatif.txt', '1111000', 'automateApile.txt'))
+#print(simulationAP('codeRAMtestPostif.txt', '11110000', 'automateApile.txt'))
 #print(affichage_resultats_terminal(analyse_programme("codeRAMtest1.txt")))
 
-print(affichage_resultats_fichier(analyse_programme("codeRAMtest1.txt"), 'executionCodeRAM_AP.txt'))
+#print(affichage_resultats_fichier(analyse_programme("codeRAMtest1.txt"), 'executionCodeRAM_AP.txt'))
+#print(affichage_resultats_fichier(analyse_programme("codeRAMtestPostif.txt"), 'executionCodeRAM_APpositif.txt'))
+print(affichage_resultats_fichier(analyse_programme("codeRAMtestNegatif.txt"), 'executionCodeRAM_AP_testNegatif.txt'))
 
 
 # Affichage des résultats de la question 6 :
