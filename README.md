@@ -26,6 +26,4 @@ Nous avons décidé d'ajouter l'instruction JNE(x, y, z) (JUMP NOT EQUAL) aux ty
 
 La première étape constite en la représentation du code d'une machine RAM sous forme de graphe, où les instructions sont représentées par des sommets et il y a une arête d'un sommet u vers un sommet v si et seulement si on peut passer de l'instruction u à l'instruction v en un seul pas de calcul.
 Notre graphe est stocké dans un dictionnaire où chaque clé est un sommet et la valeur associée est une liste de ses successeurs. Par exemple : {sommet1 : [successeur1, successeur2], sommet2 : [successeur3]}
-Il a fallu également ajouter deux sommets à notre graphe :
-- le sommet D (début) possédant un seul successeur (la première instruction) et aucun prédécesseur
-- le sommet F (fin) ne possédant aucun successeur et ses prédécesseurs sont les instructions qui peuvent pointer vers la fin du fichier
+Il a fallu également ajouter un sommet D (début) possédant un seul successeur (la première instruction) et aucun prédécesseur. 

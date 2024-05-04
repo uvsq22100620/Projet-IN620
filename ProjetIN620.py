@@ -518,14 +518,9 @@ def affichage_resultats_fichier(liste_config:list, nom_fichier:str):
 ### Question 5:
 ### Donner le code des machines de RAM suivantes :
 ### - Avec en entrée deux entiers a et b, calculer a^b => fichier ApuissanceB.txt
+print(analyse_programme("ApuissanceB.txt"))
 ### - Avec comme entrée un tableau d’entiers, écrire le tableau trié dans la sortie (par un tri à bulle) => fichier triAbull.txt
-
-
-
-print(affichage_resultats_terminal(analyse_programme("ApuissanceB.txt")))
-#print(affichage_resultats_fichier(analyse_programme("triAbulle.txt"), 'res_tri_bulle.txt'))
-
-
+print(analyse_programme("triAbulle.txt"))
 
 
 
@@ -576,15 +571,16 @@ def registres_entree(mot_w:str, fic_transitions_A:str):
 
 #print(registres_entree('01010001', 'automateApile1.txt'))
 
+# Affichage des résultats de la question 6 :
 
 
 ### Question 7 :
-### Faire tourner cette machine RAM sur un automate `a pile reconnaissant le langage {anbn | n ∈ N}
+### Faire tourner cette machine RAM sur un automate à pile reconnaissant le langage {anbn | n ∈ N}
 
 
 
 
-
+# Affichage des résultats de la question 7 :
 
 ##### PARTIE 3 : Optimisation de machine RAM
 
@@ -594,9 +590,6 @@ def registres_entree(mot_w:str, fic_transitions_A:str):
 ### passer de la première à la seconde en un pas de calcul. Donner une fonction qui créé ce graphe à partir
 ### du code d’une machine. Les instructions arithmétiques et le JUMP sont de degré sortant 1, tandis que les
 ### instructions conditionnelles sont de degré sortant 2.
-
-
-# /!\ gérer le cas quand des JUMP font référence à des lignes après la fin des instructions
 
 def creation_graphe(code):
     ''' Créé le graphe (représenté sous forme d'un dictionnaire de la machine RAM dont le code est donné en entrée'''
@@ -615,12 +608,12 @@ def creation_graphe(code):
             dico_graphe[str(ind_instr)] = [str(ind_instr+1), str(ind_instr+int(arg3))]
         else:     # si c'est une instruction ADD, SUB, MULT ou DIV 
             dico_graphe[str(ind_instr)] = [str(ind_instr+1)]
-    #dico_graphe[str(ind_instr)] += ['F']
-    # remplacer les indices supérieurs ou égaux à ceux de la derniere ligne imaginaire par le noeud F
 
     return dico_graphe
 
-#code = ['ADD(20, 0, o0)', 'JL(i0, 6, 2)', 'ADD(35505, 0, o1)', 'ADD(21, 0, o2)']
+
+# Affichage des résultats de la question 8 :
+#code = ['ADD(20, 0, o0)', 'JL(i0, 6, 2)', 'ADD(35, 0, o1)', 'ADD(21, 0, o2)']
 #graphe_RAM = creation_graphe(code)
 #print(graphe_RAM)
 
@@ -668,6 +661,8 @@ def ecrit_code_vivant(code_RAM_vivant:list, nom_fichier:str):
 
     return
 
+
+# Affichage des résultats de la question 9 :
 #code = ['ADD(1, 0, o0)', 'ADD(2, 0, o1)', 'JUMP(2)', 'ADD(3, 0, o2)', 'ADD(4, 0, o3)']
 #graphe_RAM = creation_graphe(code)
 #ecrit_code_vivant(elim_code_mort(code, graphe_RAM), 'code_vivant.txt')
@@ -744,9 +739,11 @@ def combine_instr2(code_RAM:list):
                 code_RAM.pop(op+1)  # Supprimer l'instruction
         return
     
-
+# Affichage des résultats de la question 10 :
 #combine_instr(['ADD(1, 0, o0)', 'ADD(2, 0, o1)', 'JUMP(2)', 'ADD(3, 0, o2)', 'ADD(4, 0, o3)'])
 
+
+### Fonction pour exécuter toutes les questions
 
 def execute_projet():
     print('Question 1 :')
