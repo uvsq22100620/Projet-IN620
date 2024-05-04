@@ -14,7 +14,7 @@ regex_chiffre = re.compile(r'-?\d+')
 regex_indirection = re.compile(r'([iro])@([ir])(\d+)')
 regex_instruction = re.compile(r'(ADD|SUB|DIV|MULT)\((\d+|r\d+|i\d+|o\d+|[ir]@[ir]\d+),\s*(\d+|r\d+|i\d+|o\d+|[ir]@[ir]\d+),\s*(\d+|r\d+|o\d+|[ro]@[ir]\d+)\)')
 regex_jump = re.compile(r'(JUMP)\((-?\d+)\)')
-regex_jumps_spe = re.compile(r'(JE|JL)\((\d+|r\d+|i\d+|o\d+|[ir]@[ir]\d+),\s*(\d+|r\d+|i\d+|o\d+|[ir]@[ir]\d+),\s*(-?\d+)\)')
+regex_jumps_spe = re.compile(r'(JE|JL|JNE)\((\d+|r\d+|i\d+|o\d+|[ir]@[ir]\d+),\s*(\d+|r\d+|i\d+|o\d+|[ir]@[ir]\d+),\s*(-?\d+)\)')
 
 ## Dico
 dico_type_registre = {'i': "registres_i", 'r':"registres_r", 'o':"registres_o"}
@@ -248,9 +248,13 @@ def analyse_instructions(i_instruc):
     L'indice est renseigné en paramètre et les registres sont récupérés dans le dictionnaire global'''
 
     global dico_elt_RAM
-
+    print('i : ', i_instruc)
     #récupère la position en cours dans l'execution du code RAM
     instruction = dico_elt_RAM['codeRAM'][i_instruc]
+    print(dico_elt_RAM['registres_i'])
+    print(dico_elt_RAM['registres_r'])
+    print(dico_elt_RAM['registres_o'])
+    print('instruction : ', instruction)
 
     # Analyse des groupes
     match_instruc = re.match(regex_instruction, instruction)
@@ -341,7 +345,6 @@ def analyse_instructions(i_instruc):
 
     ## Nécessaire pour la partie 2
     elif type_operation == 'JNE':
-
         if not re.match(regex_chiffre, arg1):
             desc_arg1 = desc_registre(arg1) #permet de récupérer le type de registre et son indice
 
@@ -355,7 +358,8 @@ def analyse_instructions(i_instruc):
             if desc_arg2[0] == 'o':
                 raise Exception("L'instruction est erronée. Vous ne pouvez pas lire les registres de type Output")
             arg2 = int(dico_elt_RAM[dico_type_registre[desc_arg2[0]]][desc_arg2[1]])
-
+        
+        print('ARGUMENTS', arg1, arg2)
         if int(arg1) != int(arg2):
             nv_i_instr = i_instruc + int(arg3)
         else:
@@ -410,7 +414,6 @@ def analyse_programme(nom_fichier):
 
     # Initialisation, création du dictionnaire
     info_code_RAM(read_RAM(nom_fichier))
-    print(dico_elt_RAM)
 
     instructions = dico_elt_RAM["codeRAM"]
     historique_config = []
@@ -518,9 +521,9 @@ def affichage_resultats_fichier(liste_config:list, nom_fichier:str):
 ### Question 5:
 ### Donner le code des machines de RAM suivantes :
 ### - Avec en entrée deux entiers a et b, calculer a^b => fichier ApuissanceB.txt
-print(analyse_programme("ApuissanceB.txt"))
+#print(analyse_programme("ApuissanceB.txt"))
 ### - Avec comme entrée un tableau d’entiers, écrire le tableau trié dans la sortie (par un tri à bulle) => fichier triAbull.txt
-print(analyse_programme("triAbulle.txt"))
+#print(analyse_programme("triAbulle.txt"))
 
 
 
@@ -533,12 +536,11 @@ print(analyse_programme("triAbulle.txt"))
 #print(dico_elt_RAM['registres_r'])
 
 
-##### PARTIE 2 : Automate à pile
+##### PARTIE 2 : Comment faire rentrer la pile dans la RAM ?
 
 ### Question 6 :
 ### Ecrire une machine RAM qui étant donné un automate à pile A et un mot w en entrée, écrit
 ### 0 en sortie si w est reconnu par A et 1 sinon.
-
 
 def registres_entree(mot_w:str, fic_transitions_A:str):
     ''' Créér les registres i de la machine RAM qui prend en entrée un mot w et un automate à pile A'''
@@ -569,7 +571,130 @@ def registres_entree(mot_w:str, fic_transitions_A:str):
 
     return registres_i
 
-#print(registres_entree('01010001', 'automateApile1.txt'))
+def initialisation_registre_AP(nameFile):
+    '''Fonction permettant la génération des lignes de code RAM l'initialisation des registres pour la simulation d'un automate 
+    à pile avec une machine RAM'''
+
+    with open(nameFile, 'a') as fc :
+        fc.write('ADD(0, 0, r0)\n')     #r0 est l'état (donc initialise à 0 car état initial)
+        fc.write('ADD(8, 0, r1)\n')     #r1 correspond à l'indice du sommet de pile
+        fc.write('ADD(2, 0, r2)\n')     #r2 correspond à la tête de lecture du mot (stocké en i2 donc faut faire i@r2 pour avoir la première lettre du mot -> fin du mot en i@i1 -> pas i0 car en i0 on a la taille de l'entrée)
+        fc.write('ADD(i1, 3, r3)\n')    #Correspond à l'indice du premier elt de la premiere transition
+        fc.write('ADD(0, 0, r4)\n')     #Taille de mot (mot à écrire dans une transition) à 0 pour le moment (va servir de compteur pour écrire le mot dans la pile)
+        fc.write('ADD(i1, 0, r5)\n')    #Compteur pour savoir quand est ce qu'on a terminé de lire le mot
+        fc.write('ADD(i1, 2, r6)\n')    #Stocke l'indice de la case contenant le nombre de transition
+        fc.write('ADD(0, 0, r7)\n')     #Compteur nb transition
+        fc.write('ADD(0, 0, r8)\n')     #Fond de pile donc 0
+
+    return
+
+def generation_CodeRAM(nameFile):
+    '''Fonction qui génère le code RAM pour simuler un automate à pile'''
+
+    with open(nameFile, 'a') as fc :
+
+        fc.write('ADD(r7, 1, r7)\n')    #Incrémente le compteur de transition vu car on va en traiter une
+        #Génération lignes vérification état q
+        fc.write('JNE(r0, i@r3, 21)\n')
+        fc.write('ADD(r3, 1, r3)\n')
+
+        #Génération lignes vérificaton mot à lire
+        fc.write('JNE(i@r3, i@r2, 23)\n')
+        fc.write('ADD(r3, 1, r3)\n')
+
+        #Génération lignes vérification sommet de pile
+        fc.write('JNE(r@r1, i@r3, 25)\n')
+        fc.write('ADD(r3, 1, r3)\n')    #Pointe sur la taille du mot
+
+        #Génération lignes pour l'ajout du mot dans la pile 
+        fc.write('ADD(i@r3, 0, r4)\n')    #Ajoute la taille du mot dans r4 qui va servir de compteur dans l'ajout des lettres
+        fc.write('ADD(r3, 1, r3)\n')    #Passe à la première lettre du mot
+
+        #Si c'est epsilon on doit dépiler
+        fc.write('JNE(i@r3, 2, 4)\n')   
+        fc.write('SUB(r1, 1, r1)\n')    #Décrémente de 1 la tête de lecture du sommet de pile
+        fc.write('ADD(r3, 1, r3)\n')    #Passe à q'
+        fc.write('JUMP(7)\n')
+        
+        #Si c'est pas epsilon et donc un mot à écrire dans la pile
+        fc.write('ADD(r1, 1, r1)\n')        #Décale le sommet de pile pour ajouter une lettre du mot
+        fc.write('ADD(i@r3, 0, r@r1)\n')    #Ajoute la lettre du mot
+        fc.write('ADD(r3, 1, r3)\n')        #Décale l'indice pour pointer sur la lettre suivante
+        fc.write('SUB(r4, 1, r4)\n')
+        fc.write('JE(r4, 0, 2)\n')
+        fc.write('JUMP(-5)\n')
+
+        #Changement de l'état courant
+        fc.write('ADD(i@r3, 0, r0)\n')
+        fc.write('JUMP(14)\n')     #JUMP car on a trouvé une transition donc on va traiter la lettre suivante si le mot n'est pas terminé
+
+        #Si on a regardé toutes les transitions mais aucune qui correspond à notre état c'est que c'est pas reconnu
+        fc.write('JE(r7, i@r6, 21)\n')
+        
+        #Sinon on continue de parcourir les transitions et il faut mettre le pointeur de transition sur la suivante
+        #Si la non similarité provenait de q alors r3 pointait sur l'elt 1 de la transition donc on réalise ces instructions et ainsi de suite
+        fc.write('ADD(r3, 3, r3)\n')      #Atteindre la position de la taille du mot à écrire dans la pile si la transition était la bonne
+        fc.write('ADD(i@r3, r3, r3)\n')   #Se déplacer de la taille du mot
+        fc.write('ADD(r3, 2, r3)\n')      #+1 pour être sur l'elt 1 de la transition suivante
+        fc.write('JUMP(-25)\n')
+        #Si la non similarité provenait de la lettre de la transition
+        fc.write('ADD(r3, 2, r3)\n')
+        fc.write('ADD(i@r3, r3, r3)\n')
+        fc.write('ADD(r3, 2, r3)\n')
+        fc.write('JUMP(-4)\n')
+        #Si la non similarité provenait du sommet de pile
+        fc.write('ADD(r3, 1, r3)\n')    #taille mot
+        fc.write('ADD(i@r3, r3, r3)\n') #fin mot
+        fc.write('ADD(r3, 2, r3)\n')    #+1 pour se placer sur l'elt 1 de la transition suivante
+        fc.write('JUMP(-4)\n')
+
+        #Test fin du mot
+        fc.write('SUB(r5, 1, r5)\n')      #Diminue le compteur pour la taille du mot
+        fc.write('JE(r5, 0, 5)\n')        #Si compteur 0 ça veut dire que tout le mot a été lu donc que le mot est reconnu
+
+        #Si pas fin du mot mais qu'une transition a été trouvé pour la lettre on passe à la lettre suivante
+        fc.write('ADD(r2, 1, r2)\n')    #Incrémente l'indice de la tête de lecture du mot
+        fc.write('ADD(0, 0, r7)\n')       #Rénitialise le compteur du nombre de transition testée
+        fc.write('ADD(i1, 3, r3)\n')    #Rénitialise le pointeur des transitions
+        fc.write('JUMP(-39)\n')           #Recommence le test des transitions pour la nouvelle lettre
+
+        #Mot reconnu
+        fc.write('JNE(r0, 1, 2)\n')     #Si l'état courant n'est pas l'état final alors le mot n'est pas reconnu
+        fc.write('ADD(0, 0, o0)\n')  
+        #Mot non reconnu
+        fc.write('ADD(1, 0, o0)\n')  
+
+
+def simulationAP(nameFile, mot, fic_transitions):
+    '''Fonction principale permettant la simulation d'un automate à pile avec une machine RAM'''
+
+    #Initialisation des registres de l'entrée
+    registre_i = registres_entree(mot, fic_transitions)
+
+    with open(nameFile, 'w') as fc :
+        #Ecriture de la taille de l'entrée
+        fc.write(str(len(registre_i))+', ')
+
+        #Ecriture de l'entrée
+        for i in range(len(registre_i)):
+            if i == len(registre_i)-1 :
+                fc.write(str(registre_i[i])+'\n')
+            else :
+                fc.write(str(registre_i[i])+', ')
+    
+    #Initialise les registres pour convertir l'automate à pile en code RAM
+    initialisation_registre_AP(nameFile)
+    
+    #Appelle de la fonction pour générer les lignes de code RAM
+    generation_CodeRAM(nameFile)
+
+    return
+
+#print(simulationAP('codeRAMtest1.txt', '11110000', 'automateApile.txt'))
+#print(affichage_resultats_terminal(analyse_programme("codeRAMtest1.txt")))
+
+print(affichage_resultats_fichier(analyse_programme("codeRAMtest1.txt"), 'executionCodeRAM_AP.txt'))
+
 
 # Affichage des résultats de la question 6 :
 
@@ -769,4 +894,4 @@ def execute_projet():
 
     return
 
-execute_projet()
+#execute_projet()

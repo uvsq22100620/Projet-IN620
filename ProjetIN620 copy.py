@@ -460,18 +460,6 @@ def affichage_resultats(liste_config):
 
 #Question 6 :
 
-# A faire :
-# - Fonction qui va recup l'entrée -> c'est à dire le mot w à faire tourner dans l'automate
-#   -> placer en i0 la taille du mot et dans les registres suivant les lettres du mot (i1 jusqu'à iTaillemot)
-# - Stocker à la suite du mot, le nb de transition puis les transitions (chaque elt d'une transition est dans un registre)
-
-#ro -> état 
-#r1 -> indice sommet de pile
-#r2 -> indice lettre lu du mot stocké dans registre i (tete de lecture du mot)
-#r3 -> indice lecture transition (tête de lecture des transitions)
-#r4 -> va permettre de stocker les tailles des mots à écrire dans la pile
-#r5 -> fond de pile donc doit mettre 0
-
 def registres_entree(mot_w:str, fic_transitions_A:str):
     ''' Créér les registres i de la machine RAM qui prend en entrée un mot w et un automate à pile A'''
 
