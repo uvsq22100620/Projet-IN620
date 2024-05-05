@@ -67,7 +67,7 @@ def info_code_RAM(codeRAM):
     return dico_elt_RAM
 
 # Affichage des résultats de la question 1 :
-#print(read_RAM('test2.txt))
+#print(read_RAM('test2.txt'))
 
 
 ### Question 2:
@@ -692,13 +692,13 @@ def simulationAP(nameFile, mot, fic_transitions):
 
     return
 
-print(simulationAP('codeRAMtestNegatif.txt', '1111000', 'automateApile.txt'))
+#print(simulationAP('codeRAMtestNegatif.txt', '1111000', 'automateApile.txt'))
 #print(simulationAP('codeRAMtestPostif.txt', '11110000', 'automateApile.txt'))
 #print(affichage_resultats_terminal(analyse_programme("codeRAMtest1.txt")))
 
 #print(affichage_resultats_fichier(analyse_programme("codeRAMtest1.txt"), 'executionCodeRAM_AP.txt'))
 #print(affichage_resultats_fichier(analyse_programme("codeRAMtestPostif.txt"), 'executionCodeRAM_APpositif.txt'))
-print(affichage_resultats_fichier(analyse_programme("codeRAMtestNegatif.txt"), 'executionCodeRAM_AP_testNegatif.txt'))
+#print(affichage_resultats_fichier(analyse_programme("codeRAMtestNegatif.txt"), 'executionCodeRAM_AP_testNegatif.txt'))
 
 
 # Affichage des résultats de la question 6 :
@@ -795,6 +795,7 @@ def ecrit_code_vivant(code_RAM_vivant:list, nom_fichier:str):
 # Affichage des résultats de la question 9 :
 #code = ['ADD(1, 0, o0)', 'ADD(2, 0, o1)', 'JUMP(2)', 'ADD(3, 0, o2)', 'ADD(4, 0, o3)']
 #graphe_RAM = creation_graphe(code)
+#print(graphe_RAM)
 #ecrit_code_vivant(elim_code_mort(code, graphe_RAM), 'code_vivant.txt')
 
 
@@ -803,43 +804,18 @@ def ecrit_code_vivant(code_RAM_vivant:list, nom_fichier:str):
 ### exemple, les deux instructions consécutives ADD(4,0,r1), ADD(r1,9,r1) peuvent être remplacées par
 ### ADD(13,0,r1), si dans le graphe le sommet ADD(r1,9,r1) n’a comme prédécesseur que ADD(4,0,r1).
 
-def combine_instr(code_RAM:list):
-    ''' Combine plusieurs instructions en une seule si cela est possible '''
 
-    duo_op_compatibles = [('ADD', 'ADD'), ('ADD', 'SUB'), ('SUB', 'ADD'), ('SUB', 'SUB'),
-                          ('MULT', 'MULT'), ('MULT', 'DIV'), ('DIV', 'MULT'), ('DIV', 'DIV')]
+def trouve_predecesseurs(graphe:dict, sommet:int):
+    ''' Retourne les prédecesseurs d'un sommet dans un graphe sous forme de dictionnaire'''
+    pred = []
+    for key,value in graphe.items():
+        if str(sommet) in value:
+            pred.append(key)
+    return pred
 
-    liste_type_instr = []   # liste qui contiendra le type (ADD, SUB, ...) de chaque instruction
-    liste_arg_instr = []    # liste qui contiendra les arguments des instructions de type ADD, SUB, MULT et DIV (sous forme de tuples)
 
-    for instr in code_RAM:
-        match_instruc = re.match(regex_instruction, instr)
-        if match_instruc:
-            type_operation = match_instruc.group(1)
-            liste_type_instr.append(type_operation)
-            arg1 = match_instruc.group(2)
-            arg2 = match_instruc.group(3)
-            arg3 = match_instruc.group(4)
-            liste_arg_instr.append((arg1, arg2, arg3))
-
-        else:
-            liste_type_instr.append('J')    # pour indiquer que l'instruction n'est pas un ADD ni SUB ni MULT ni DIV
-            liste_arg_instr.append('J')
-    print(liste_type_instr)
-    print(liste_arg_instr)
-
-    for op in range(len(liste_type_instr)-1):
-        if (liste_type_instr[op], liste_type_instr[op+1]) in duo_op_compatibles:
-            arg_op = liste_arg_instr[op]
-            arg_op_suivant = liste_arg_instr[op+1]
-            if (arg_op[2] == arg_op_suivant[0]) and (arg_op_suivant[0] == arg_op_suivant[2]):
-                pass
-            elif (arg_op[2] == arg_op_suivant[1]) and (arg_op_suivant[1] == arg_op_suivant[2]):
-                pass
-
-    return
-
-def combine_instr2(code_RAM:list):
+def combine_instr(code_RAM:list, graphe_RAM:dict):
+    ''' Combine plusieurs lignes d'instruction en une seule, en particulier quand il s'agit de deux ADD'''
 
     liste_type_instr = []   # liste qui contiendra le type (ADD, SUB, ...) de chaque instruction
     liste_arg_instr = []    # liste qui contiendra les arguments des instructions de type ADD, SUB, MULT et DIV (sous forme de tuples)
@@ -862,22 +838,26 @@ def combine_instr2(code_RAM:list):
         if liste_type_instr[op] == 'ADD' and liste_type_instr[op+1] == 'ADD':
             arg_op = liste_arg_instr[op]
             arg_op_suivant = liste_arg_instr[op+1]
-            if (arg_op[2] == arg_op_suivant[0]) and (arg_op_suivant[0] == arg_op_suivant[2]):            
+            predecesseurs = trouve_predecesseurs(graphe_RAM, op+1)
+            if (arg_op[2] == arg_op_suivant[0]) and (arg_op_suivant[0] == arg_op_suivant[2]) and len(predecesseurs) == 1:            
                 # Ajout de la nouvelle instruction
-                valeur = liste_arg_instr[op][0] + liste_arg_instr[op][1] + liste_arg_instr[op+1][1]
-                code_RAM[op] = 'ADD(' + str(valeur) + ', 0' + liste_arg_instr[op+1][2] + ')'    # remplacer l'instruction
+                valeur = int(liste_arg_instr[op][0]) + int(liste_arg_instr[op][1]) + int(liste_arg_instr[op+1][1])
+                code_RAM[op] = 'ADD(' + str(valeur) + ', 0, ' + liste_arg_instr[op+1][2] + ')'    # remplacer l'instruction
                 code_RAM.pop(op+1)  # Supprimer l'instruction
-        return
+
+    return code_RAM
     
 # Affichage des résultats de la question 10 :
-#combine_instr(['ADD(1, 0, o0)', 'ADD(2, 0, o1)', 'JUMP(2)', 'ADD(3, 0, o2)', 'ADD(4, 0, o3)'])
+#code = ['ADD(1, 0, o0)', 'ADD(2, 0, o1)', 'ADD(3, 0, r0)', 'ADD(r0, 4, r0)']      # modification
+#code = ['ADD(1, 0, o0)', 'ADD(2, 0, o1)', 'JUMP(2)', 'ADD(3, 0, r0)', 'ADD(r0, 4, r0)']       # pas de modification
+#print(combine_instr(code, creation_graphe(code)))
 
 
 ### Fonction pour exécuter toutes les questions
 
 def execute_projet():
     print('Question 1 :')
-    print()
+    print(read_RAM('test2.txt'))
     print('Question 2 :')
     print()
     print('Question 3 :')
