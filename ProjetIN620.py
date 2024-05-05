@@ -248,13 +248,13 @@ def analyse_instructions(i_instruc):
     L'indice est renseigné en paramètre et les registres sont récupérés dans le dictionnaire global'''
 
     global dico_elt_RAM
-    print('i : ', i_instruc)
+    #print('i : ', i_instruc)
     #récupère la position en cours dans l'execution du code RAM
     instruction = dico_elt_RAM['codeRAM'][i_instruc]
-    print(dico_elt_RAM['registres_i'])
-    print(dico_elt_RAM['registres_r'])
-    print(dico_elt_RAM['registres_o'])
-    print('instruction : ', instruction)
+    #print(dico_elt_RAM['registres_i'])
+    #print(dico_elt_RAM['registres_r'])
+    #print(dico_elt_RAM['registres_o'])
+    #print('instruction : ', instruction)
 
     # Analyse des groupes
     match_instruc = re.match(regex_instruction, instruction)
@@ -268,7 +268,6 @@ def analyse_instructions(i_instruc):
         arg3 = match_instruc.group(4)
 
     elif match_jump :
-        #print(match_jump)
         type_operation = 'JUMP'
         arg1 = int(match_jump.group(2))
         arg2 = '0'
@@ -281,7 +280,6 @@ def analyse_instructions(i_instruc):
         arg3 = match_jumps_spe.group(4)
         
     else :
-        print(match_jumps_spe)
         raise Exception("L'instruction n'est pas valide")
     
     # Test pas de #
@@ -421,10 +419,7 @@ def analyse_programme(nom_fichier):
     fin_fichier = len(dico_elt_RAM["codeRAM"])
 
     while i_instr_courant < fin_fichier :
-        #print(i_instr_courant)
-        #print(instructions[i_instr_courant])
         res = analyse_instructions(i_instr_courant)
-        #print('reg_o : ', res[1]['registres_o'])
         i_instr_courant = res[0]    # indice de la prochaine ligne à exécuter
         dico_elt_RAM['registres_r'] = res[1]['registres_r'].copy()  # pour régler le problème d'écraser les anciennes listes
         dico_elt_RAM['registres_o'] = res[1]['registres_o'].copy()
@@ -477,9 +472,7 @@ def affichage_resultats_terminal(liste_config):
 
 
 # Affichage des résultats de la question 4 :
-#print(analyse_programme("question1_ex code recherche max.txt"))
 #print(affichage_resultats_terminal(analyse_programme("test2.txt")))
-#print(affichage_resultats_fichier(analyse_programme("test2.txt")))
 
 
 ### Question 5:
@@ -756,14 +749,12 @@ def elim_code_mort(code_RAM:list, graphe_RAM:dict):
         for i in instr_atteinte:
             instr_executees.append(int(i))
     instr_executees = set(instr_executees)
-    print('IE : ', instr_executees)
 
     # Vérification qu'il n'existe pas d'autres instructions
     instr_non_atteintes = []
     for instr in range(len(code_RAM)):
         if instr not in instr_executees:
             instr_non_atteintes.append(instr)
-    print('INA : ', instr_non_atteintes)
     
     # Suppression des instructions jamais atteintes
     code_RAM_vivant = code_RAM.copy() # code_RAM sans le code mort
@@ -789,6 +780,9 @@ def ecrit_code_vivant(code_RAM_vivant:list, nom_fichier:str):
 #graphe_RAM = creation_graphe(code)
 #print(graphe_RAM)
 #ecrit_code_vivant(elim_code_mort(code, graphe_RAM), 'code_vivant.txt')
+
+# Remarque : après avoir éliminé des instructions de code mort, le nombre d'instructions à sauter dans un JUMP,
+# JE ou JL peut donc changer. Il faudrait réappliquer une autre fonction pour modifier ces valeurs en conséquent.
 
 
 ### Question 10 (BONUS):
@@ -858,10 +852,12 @@ def execute_projet():
     print('Question 3 :')
     print(analyse_programme("test3.txt"))
     print('Question 4 :')
-    print(analyse_programme("question1_ex code recherche max.txt"))
+    print(affichage_resultats_terminal(analyse_programme("test2.txt")))
     print('Question 5 :')
-    print('a^b : ', analyse_programme("ApuissanceB.txt"))
-    print('tri a bulle : ', analyse_programme("triAbulle.txt"))
+    print('a^b :')
+    print(affichage_resultats_terminal(analyse_programme("ApuissanceB.txt")))
+    print('tri à bulle :')
+    print(affichage_resultats_terminal(analyse_programme("triAbulle.txt")))
     print('Question 6 :')
     print()
     print('Question 7 :')
@@ -871,10 +867,10 @@ def execute_projet():
     print('Question 9 :')
     code = ['ADD(1, 0, o0)', 'ADD(2, 0, o1)', 'JUMP(2)', 'ADD(3, 0, o2)', 'ADD(4, 0, o3)']
     graphe_RAM = creation_graphe(code)
-    print(elim_code_mort(code, graphe_RAM), 'code_vivant.txt')
+    print(elim_code_mort(code, graphe_RAM))
     ecrit_code_vivant(elim_code_mort(code, graphe_RAM), 'code_vivant.txt')
     print('Question 10 :')
-    code = ['ADD(1, 0, o0)', 'ADD(2, 0, o1)', 'ADD(3, 0, r0)', 'ADD(r0, 4, r0)']
+    code = ['ADD(3, 0, r0)', 'ADD(r0, 4, r0)', 'ADD(1, 0, o0)', 'ADD(2, 0, o1)', 'ADD(r0, 0, o2)']
     print(combine_instr(code, creation_graphe(code)))
 
     return
