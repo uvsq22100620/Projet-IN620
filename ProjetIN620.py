@@ -526,9 +526,8 @@ def registres_entree(mot_w:str, fic_transitions_A:str):
 
     return registres_i
 
-def initialisation_registre_AP(nameFile):
-    '''Fonction permettant la génération des lignes de code RAM l'initialisation des registres pour la simulation d'un automate 
-    à pile avec une machine RAM'''
+def initialisation_registre_AP(nameFile:str):
+    '''Fonction permettant d'écrire une machine RAM afin de simuler un automate à pile'''
 
     with open(nameFile, 'a') as fc :
         fc.write('ADD(0, 0, r0)\n')     #r0 est l'état (donc initialise à 0 car état initial)
