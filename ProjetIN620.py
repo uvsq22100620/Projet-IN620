@@ -67,7 +67,7 @@ def info_code_RAM(codeRAM):
     return dico_elt_RAM
 
 # Affichage des résultats de la question 1 :
-print(info_code_RAM(read_RAM('test2.txt')))
+#print(info_code_RAM(read_RAM('test2.txt')))
 
 
 ### Question 2:
@@ -475,42 +475,6 @@ def affichage_resultats_terminal(liste_config):
     return 'fin du programme RAM'
 
 
-def affichage_resultats_fichier(liste_config:list, nom_fichier:str):
-
-    fic = open(nom_fichier, 'w')
-    
-    for i_config in range(len(liste_config)):
-        fic.write('iteration '+str(i_config)+'\n')
-        reg_i = liste_config[i_config]['registres_i']
-        reg_r = liste_config[i_config]['registres_r']
-        reg_o = liste_config[i_config]['registres_o']
-        
-        for k in range(len(reg_i)):
-            fic.write('i'+str(k)+'  ')
-        fic.write('     ')
-        for k in range(len(reg_r)):
-            fic.write('r'+str(k)+'  ')
-        fic.write('     ')
-        for k in range(len(reg_o)):
-            fic.write('o'+str(k)+'  ')
-
-        fic.write('\n')
-
-
-        for k in range(len(reg_i)):
-            fic.write(str(reg_i[k])+(4-len(str(reg_i[k])))*' ')
-        fic.write('     ')
-        for k in range(len(reg_r)):
-            fic.write(str(reg_r[k])+(4-len(str(reg_r[k])))*' ')
-        fic.write('     ')
-        for k in range(len(reg_o)):
-            fic.write(str(reg_o[k])+(4-len(str(reg_o[k])))*' ')
-        fic.write('\n')
-        fic.write('______________________________________________________________________\n')
-
-    fic.close()
-
-    return
 
 # Affichage des résultats de la question 4 :
 #print(analyse_programme("question1_ex code recherche max.txt"))
@@ -525,15 +489,6 @@ def affichage_resultats_fichier(liste_config:list, nom_fichier:str):
 ### - Avec comme entrée un tableau d’entiers, écrire le tableau trié dans la sortie (par un tri à bulle) => fichier triAbull.txt
 #print(analyse_programme("triAbulle.txt"))
 
-
-
-# lignes de codes de tests que je garde de côté au cas où
-
-#print(instruction_ADD('ADD(i1, 0, r1)', [['10', '7', ' 25', ' 14', ' 68', ' 39', ' 50', ' 92', ' 3', ' 61', ' 18'], ['#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'], ['#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#']]))
-
-#info_code_RAM(read_RAM("question1_ex code recherche max.txt"))
-#print(instruction_ADD(dico_elt_RAM['codeRAM'][0], [dico_elt_RAM['registres_i'], dico_elt_RAM['registres_r'], dico_elt_RAM['registres_o']]))
-#print(dico_elt_RAM['registres_r'])
 
 
 ##### PARTIE 2 : Comment faire rentrer la pile dans la RAM ?
@@ -692,6 +647,7 @@ def simulationAP(nameFile, mot, fic_transitions):
 
     return
 
+# Affichage des résultats de la question 6 :
 #print(simulationAP('codeRAMtestNegatif.txt', '1111000', 'automateApile.txt'))
 #print(simulationAP('codeRAMtestPostif.txt', '11110000', 'automateApile.txt'))
 #print(affichage_resultats_terminal(analyse_programme("codeRAMtest1.txt")))
@@ -701,16 +657,13 @@ def simulationAP(nameFile, mot, fic_transitions):
 #print(affichage_resultats_fichier(analyse_programme("codeRAMtestNegatif.txt"), 'executionCodeRAM_AP_testNegatif.txt'))
 
 
-# Affichage des résultats de la question 6 :
-
 
 ### Question 7 :
 ### Faire tourner cette machine RAM sur un automate à pile reconnaissant le langage {anbn | n ∈ N}
 
-
-
-
 # Affichage des résultats de la question 7 :
+#print(...)
+
 
 ##### PARTIE 3 : Optimisation de machine RAM
 
@@ -857,26 +810,34 @@ def combine_instr(code_RAM:list, graphe_RAM:dict):
 
 def execute_projet():
     print('Question 1 :')
-    print(read_RAM('test2.txt'))
+    print(info_code_RAM(read_RAM('test2.txt')))
     print('Question 2 :')
-    print()
+    print(analyse_instructions(0))
+    print(analyse_instructions(1))
+    print(analyse_instructions(2))
+    print(analyse_instructions(3))
     print('Question 3 :')
-    print()
+    print(analyse_programme("test3.txt"))
     print('Question 4 :')
-    print()
+    print(analyse_programme("question1_ex code recherche max.txt"))
     print('Question 5 :')
-    print()
+    print('a^b : ', analyse_programme("ApuissanceB.txt"))
+    print('tri a bulle : ', analyse_programme("triAbulle.txt"))
     print('Question 6 :')
     print()
     print('Question 7 :')
     print()
     print('Question 8 :')
-    print()
+    print(creation_graphe(['ADD(20, 0, o0)', 'JL(i0, 6, 2)', 'ADD(35, 0, o1)', 'ADD(21, 0, o2)']))
     print('Question 9 :')
-    print()
+    code = ['ADD(1, 0, o0)', 'ADD(2, 0, o1)', 'JUMP(2)', 'ADD(3, 0, o2)', 'ADD(4, 0, o3)']
+    graphe_RAM = creation_graphe(code)
+    print(elim_code_mort(code, graphe_RAM), 'code_vivant.txt')
+    ecrit_code_vivant(elim_code_mort(code, graphe_RAM), 'code_vivant.txt')
     print('Question 10 :')
-    print()
+    code = ['ADD(1, 0, o0)', 'ADD(2, 0, o1)', 'ADD(3, 0, r0)', 'ADD(r0, 4, r0)']
+    print(combine_instr(code, creation_graphe(code)))
 
     return
 
-#execute_projet()
+execute_projet()
