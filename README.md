@@ -9,9 +9,7 @@ Vous pouvez évidemment modifier les paramètres des fonctions, comme en testant
 
 ### PARTIE 1 : Simulation de l'exécution d'une machine RAM
 
-Dire comment on représente une machine RAM
-
-Nous avons représenté une configuration d'une machine RAM comme... Quand les instructions du code RAM sont exécutées sur l'entrée donnée, les différentes configurations sont stockées dans une liste, affichée sur le terminal.
+Nous représentons le code d'une machine RAM comme une liste de ses instructions. Une configuration est donnée par un dictionnaire comprenant l'état des registres i, r et o, ainsi que la liste des instructions. Quand les instructions du code RAM sont exécutées sur l'entrée donnée, les différentes configurations (dictionnaires) sont stockées dans une liste.
 
 Nous avons aussi fait un affichage sur le terminal pour visualiser l'état des registres après chaque instruction.
 
@@ -27,3 +25,7 @@ Nous avons décidé d'ajouter l'instruction JNE(x, y, z) (JUMP NOT EQUAL) aux ty
 La première étape constite en la représentation du code d'une machine RAM sous forme de graphe, où les instructions sont représentées par des sommets et il y a une arête d'un sommet u vers un sommet v si et seulement si on peut passer de l'instruction u à l'instruction v en un seul pas de calcul.
 Notre graphe est stocké dans un dictionnaire où chaque clé est un sommet et la valeur associée est une liste de ses successeurs. Par exemple : {sommet1 : [successeur1, successeur2], sommet2 : [successeur3]}
 Il a fallu également ajouter un sommet D (début) possédant un seul successeur (la première instruction) et aucun prédécesseur. 
+Cela nous permet d'optimiser la machine RAM de deux façons différentes :
+- élimination du code mort (instructions qui ne seront jamais exécutées)
+- regrouper plusieurs instructions en une seule (quand cela est possible)
+Cela permet donc de diminuer le nombre d'instructions.

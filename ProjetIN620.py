@@ -67,7 +67,7 @@ def info_code_RAM(codeRAM):
     return dico_elt_RAM
 
 # Affichage des résultats de la question 1 :
-#print(read_RAM('test2.txt'))
+print(info_code_RAM(read_RAM('test2.txt')))
 
 
 ### Question 2:
