@@ -67,7 +67,7 @@ def info_code_RAM(codeRAM):
     return dico_elt_RAM
 
 # Affichage des résultats de la question 1 :
-#print(read_RAM('test2.txt))
+#print(info_code_RAM(read_RAM('test2.txt')))
 
 
 ### Question 2:
@@ -475,42 +475,6 @@ def affichage_resultats_terminal(liste_config):
     return 'fin du programme RAM'
 
 
-def affichage_resultats_fichier(liste_config:list, nom_fichier:str):
-
-    fic = open(nom_fichier, 'w')
-    
-    for i_config in range(len(liste_config)):
-        fic.write('iteration '+str(i_config)+'\n')
-        reg_i = liste_config[i_config]['registres_i']
-        reg_r = liste_config[i_config]['registres_r']
-        reg_o = liste_config[i_config]['registres_o']
-        
-        for k in range(len(reg_i)):
-            fic.write('i'+str(k)+'  ')
-        fic.write('     ')
-        for k in range(len(reg_r)):
-            fic.write('r'+str(k)+'  ')
-        fic.write('     ')
-        for k in range(len(reg_o)):
-            fic.write('o'+str(k)+'  ')
-
-        fic.write('\n')
-
-
-        for k in range(len(reg_i)):
-            fic.write(str(reg_i[k])+(4-len(str(reg_i[k])))*' ')
-        fic.write('     ')
-        for k in range(len(reg_r)):
-            fic.write(str(reg_r[k])+(4-len(str(reg_r[k])))*' ')
-        fic.write('     ')
-        for k in range(len(reg_o)):
-            fic.write(str(reg_o[k])+(4-len(str(reg_o[k])))*' ')
-        fic.write('\n')
-        fic.write('______________________________________________________________________\n')
-
-    fic.close()
-
-    return
 
 # Affichage des résultats de la question 4 :
 #print(analyse_programme("question1_ex code recherche max.txt"))
@@ -525,15 +489,6 @@ def affichage_resultats_fichier(liste_config:list, nom_fichier:str):
 ### - Avec comme entrée un tableau d’entiers, écrire le tableau trié dans la sortie (par un tri à bulle) => fichier triAbull.txt
 #print(analyse_programme("triAbulle.txt"))
 
-
-
-# lignes de codes de tests que je garde de côté au cas où
-
-#print(instruction_ADD('ADD(i1, 0, r1)', [['10', '7', ' 25', ' 14', ' 68', ' 39', ' 50', ' 92', ' 3', ' 61', ' 18'], ['#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'], ['#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#']]))
-
-#info_code_RAM(read_RAM("question1_ex code recherche max.txt"))
-#print(instruction_ADD(dico_elt_RAM['codeRAM'][0], [dico_elt_RAM['registres_i'], dico_elt_RAM['registres_r'], dico_elt_RAM['registres_o']]))
-#print(dico_elt_RAM['registres_r'])
 
 
 ##### PARTIE 2 : Comment faire rentrer la pile dans la RAM ?
@@ -739,19 +694,16 @@ print(simulationAP('codeRAMtestNegatif.txt', '111000', 'automateApile.txt'))
 
 #print(affichage_resultats_fichier(analyse_programme("codeRAMtest1.txt"), 'executionCodeRAM_AP.txt'))
 #print(affichage_resultats_fichier(analyse_programme("codeRAMtestPostif.txt"), 'executionCodeRAM_APpositif.txt'))
-print(affichage_resultats_fichier(analyse_programme("codeRAMtestNegatif.txt"), 'executionCodeRAM_AP_testNegatif.txt'))
+#print(affichage_resultats_fichier(analyse_programme("codeRAMtestNegatif.txt"), 'executionCodeRAM_AP_testNegatif.txt'))
 
-
-# Affichage des résultats de la question 6 :
 
 
 ### Question 7 :
 ### Faire tourner cette machine RAM sur un automate à pile reconnaissant le langage {anbn | n ∈ N}
 
-
-
-
 # Affichage des résultats de la question 7 :
+#print(...)
+
 
 ##### PARTIE 3 : Optimisation de machine RAM
 
@@ -836,6 +788,7 @@ def ecrit_code_vivant(code_RAM_vivant:list, nom_fichier:str):
 # Affichage des résultats de la question 9 :
 #code = ['ADD(1, 0, o0)', 'ADD(2, 0, o1)', 'JUMP(2)', 'ADD(3, 0, o2)', 'ADD(4, 0, o3)']
 #graphe_RAM = creation_graphe(code)
+#print(graphe_RAM)
 #ecrit_code_vivant(elim_code_mort(code, graphe_RAM), 'code_vivant.txt')
 
 
@@ -844,43 +797,18 @@ def ecrit_code_vivant(code_RAM_vivant:list, nom_fichier:str):
 ### exemple, les deux instructions consécutives ADD(4,0,r1), ADD(r1,9,r1) peuvent être remplacées par
 ### ADD(13,0,r1), si dans le graphe le sommet ADD(r1,9,r1) n’a comme prédécesseur que ADD(4,0,r1).
 
-def combine_instr(code_RAM:list):
-    ''' Combine plusieurs instructions en une seule si cela est possible '''
 
-    duo_op_compatibles = [('ADD', 'ADD'), ('ADD', 'SUB'), ('SUB', 'ADD'), ('SUB', 'SUB'),
-                          ('MULT', 'MULT'), ('MULT', 'DIV'), ('DIV', 'MULT'), ('DIV', 'DIV')]
+def trouve_predecesseurs(graphe:dict, sommet:int):
+    ''' Retourne les prédecesseurs d'un sommet dans un graphe sous forme de dictionnaire'''
+    pred = []
+    for key,value in graphe.items():
+        if str(sommet) in value:
+            pred.append(key)
+    return pred
 
-    liste_type_instr = []   # liste qui contiendra le type (ADD, SUB, ...) de chaque instruction
-    liste_arg_instr = []    # liste qui contiendra les arguments des instructions de type ADD, SUB, MULT et DIV (sous forme de tuples)
 
-    for instr in code_RAM:
-        match_instruc = re.match(regex_instruction, instr)
-        if match_instruc:
-            type_operation = match_instruc.group(1)
-            liste_type_instr.append(type_operation)
-            arg1 = match_instruc.group(2)
-            arg2 = match_instruc.group(3)
-            arg3 = match_instruc.group(4)
-            liste_arg_instr.append((arg1, arg2, arg3))
-
-        else:
-            liste_type_instr.append('J')    # pour indiquer que l'instruction n'est pas un ADD ni SUB ni MULT ni DIV
-            liste_arg_instr.append('J')
-    print(liste_type_instr)
-    print(liste_arg_instr)
-
-    for op in range(len(liste_type_instr)-1):
-        if (liste_type_instr[op], liste_type_instr[op+1]) in duo_op_compatibles:
-            arg_op = liste_arg_instr[op]
-            arg_op_suivant = liste_arg_instr[op+1]
-            if (arg_op[2] == arg_op_suivant[0]) and (arg_op_suivant[0] == arg_op_suivant[2]):
-                pass
-            elif (arg_op[2] == arg_op_suivant[1]) and (arg_op_suivant[1] == arg_op_suivant[2]):
-                pass
-
-    return
-
-def combine_instr2(code_RAM:list):
+def combine_instr(code_RAM:list, graphe_RAM:dict):
+    ''' Combine plusieurs lignes d'instruction en une seule, en particulier quand il s'agit de deux ADD'''
 
     liste_type_instr = []   # liste qui contiendra le type (ADD, SUB, ...) de chaque instruction
     liste_arg_instr = []    # liste qui contiendra les arguments des instructions de type ADD, SUB, MULT et DIV (sous forme de tuples)
@@ -903,41 +831,53 @@ def combine_instr2(code_RAM:list):
         if liste_type_instr[op] == 'ADD' and liste_type_instr[op+1] == 'ADD':
             arg_op = liste_arg_instr[op]
             arg_op_suivant = liste_arg_instr[op+1]
-            if (arg_op[2] == arg_op_suivant[0]) and (arg_op_suivant[0] == arg_op_suivant[2]):            
+            predecesseurs = trouve_predecesseurs(graphe_RAM, op+1)
+            if (arg_op[2] == arg_op_suivant[0]) and (arg_op_suivant[0] == arg_op_suivant[2]) and len(predecesseurs) == 1:            
                 # Ajout de la nouvelle instruction
-                valeur = liste_arg_instr[op][0] + liste_arg_instr[op][1] + liste_arg_instr[op+1][1]
-                code_RAM[op] = 'ADD(' + str(valeur) + ', 0' + liste_arg_instr[op+1][2] + ')'    # remplacer l'instruction
+                valeur = int(liste_arg_instr[op][0]) + int(liste_arg_instr[op][1]) + int(liste_arg_instr[op+1][1])
+                code_RAM[op] = 'ADD(' + str(valeur) + ', 0, ' + liste_arg_instr[op+1][2] + ')'    # remplacer l'instruction
                 code_RAM.pop(op+1)  # Supprimer l'instruction
-        return
+
+    return code_RAM
     
 # Affichage des résultats de la question 10 :
-#combine_instr(['ADD(1, 0, o0)', 'ADD(2, 0, o1)', 'JUMP(2)', 'ADD(3, 0, o2)', 'ADD(4, 0, o3)'])
+#code = ['ADD(1, 0, o0)', 'ADD(2, 0, o1)', 'ADD(3, 0, r0)', 'ADD(r0, 4, r0)']      # modification
+#code = ['ADD(1, 0, o0)', 'ADD(2, 0, o1)', 'JUMP(2)', 'ADD(3, 0, r0)', 'ADD(r0, 4, r0)']       # pas de modification
+#print(combine_instr(code, creation_graphe(code)))
 
 
 ### Fonction pour exécuter toutes les questions
 
 def execute_projet():
     print('Question 1 :')
-    print()
+    print(info_code_RAM(read_RAM('test2.txt')))
     print('Question 2 :')
-    print()
+    print(analyse_instructions(0))
+    print(analyse_instructions(1))
+    print(analyse_instructions(2))
+    print(analyse_instructions(3))
     print('Question 3 :')
-    print()
+    print(analyse_programme("test3.txt"))
     print('Question 4 :')
-    print()
+    print(analyse_programme("question1_ex code recherche max.txt"))
     print('Question 5 :')
-    print()
+    print('a^b : ', analyse_programme("ApuissanceB.txt"))
+    print('tri a bulle : ', analyse_programme("triAbulle.txt"))
     print('Question 6 :')
     print()
     print('Question 7 :')
     print()
     print('Question 8 :')
-    print()
+    print(creation_graphe(['ADD(20, 0, o0)', 'JL(i0, 6, 2)', 'ADD(35, 0, o1)', 'ADD(21, 0, o2)']))
     print('Question 9 :')
-    print()
+    code = ['ADD(1, 0, o0)', 'ADD(2, 0, o1)', 'JUMP(2)', 'ADD(3, 0, o2)', 'ADD(4, 0, o3)']
+    graphe_RAM = creation_graphe(code)
+    print(elim_code_mort(code, graphe_RAM), 'code_vivant.txt')
+    ecrit_code_vivant(elim_code_mort(code, graphe_RAM), 'code_vivant.txt')
     print('Question 10 :')
-    print()
+    code = ['ADD(1, 0, o0)', 'ADD(2, 0, o1)', 'ADD(3, 0, r0)', 'ADD(r0, 4, r0)']
+    print(combine_instr(code, creation_graphe(code)))
 
     return
 
-#execute_projet()
+execute_projet()
