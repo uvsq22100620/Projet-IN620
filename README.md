@@ -18,7 +18,14 @@ Celui pour trier un tableau à l'aide du tri à bulle est dans le fichier triAbu
 
 ### PARTIE 2 : Simulation d'un automate à pile par une machine RAM
 
-Nous avons décidé d'ajouter l'instruction JNE(x, y, z) (JUMP NOT EQUAL) aux types d'instructions possibles. Cette instruction permet de sauter de z lignes si x est différent de y et elle est gérée par la fonction analyse_instructions() de la partie 1.
+Pour faire la simulation d'un automate à pile par une machine RAM, il faut générer dans un fichier txt, le code de la machine RAM permettant cette simulation. On a besoin de plusieurs variables et compteurs qui sont stockés dans les registres r en plus de la pile. 
+
+L'idée pour faire cette simulation est la suivante : 
+- on fait l'initialisation des registres r
+-  on regarde s'il y a une transition pour chaque lettre du mot en regardant si l'état de départ, la lettre et le sommet de pile sont identiques entre la transition à tester et les paramètres dans lesquels on se trouve
+- Arrivée à la fin, si on est dans un état final, alors le mot est reconnu, sinon on va regarder s'il n'y a pas une epsilon transition qui nous amène dans un état final. Si c'est le cas, le mot est reconnu, sinon il ne l'est pas.
+
+Pour cette partie, nous avons décidé d'ajouter l'instruction JNE(x, y, z) (JUMP NOT EQUAL) aux types d'instructions possibles. Cette instruction permet de sauter de z lignes si x est différent de y et elle est gérée par la fonction analyse_instructions() de la partie 1.
 
 ### PARTIE 3 : Optimisation d'une machine RAM
 
