@@ -472,9 +472,9 @@ def affichage_resultats_terminal(liste_config):
 ### Question 5:
 ### Donner le code des machines de RAM suivantes :
 ### - Avec en entrée deux entiers a et b, calculer a^b => fichier ApuissanceB.txt
-#print(analyse_programme("ApuissanceB.txt"))
+#print(affichage_resultats_terminal(analyse_programme("ApuissanceB.txt")))
 ### - Avec comme entrée un tableau d’entiers, écrire le tableau trié dans la sortie (par un tri à bulle) => fichier triAbull.txt
-#print(analyse_programme("triAbulle.txt"))
+#print(affichage_resultats_terminal(analyse_programme("triAbulle.txt")))
 
 
 
@@ -681,15 +681,15 @@ def simulationAP(nameFile, mot, fic_transitions):
 
 # Affichage des résultats de la question 6 :
 #print(simulationAP('codeRAMtestPostif.txt', '1111000', 'automateApile.txt'))
-#print(simulationAP('codeRAMtestNegatif.txt', '111000', 'automateApile.txt'))
+#print(simulationAP('codeRAMtestNegatif.txt', '11100', 'automateApile.txt'))
 
 
 ### Question 7 :
 ### Faire tourner cette machine RAM sur un automate à pile reconnaissant le langage {anbn | n ∈ N}
 
 # Affichage des résultats de la question 7 :
-#print(affichage_resultats_terminal(analyse_programme("codeRAMtestPostif.txt"), 'executionCodeRAM_APpositif.txt'))
-#print(affichage_resultats_terminal(analyse_programme("codeRAMtestNegatif.txt"), 'executionCodeRAM_AP_testNegatif.txt'))
+#print(affichage_resultats_terminal(analyse_programme("codeRAMtestPostif.txt")))
+#print(affichage_resultats_terminal(analyse_programme("codeRAMtestNegatif.txt")))
 
 
 ##### PARTIE 3 : Optimisation de machine RAM
